@@ -1,4 +1,4 @@
 # JimpMaze
 Autorzy:
--Mateusz Ciurzyński
+-Mateusz Ciurzyński,
 -Borys Piątek
