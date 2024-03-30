@@ -1,33 +1,20 @@
 #include <stdio.h>
 #include "file_menagement.h"
-
+#include <stdint.h>
 #include <stdlib.h>
 
 int main(int argc, char **argv) {
-	if (argc == 1) {
-		fprintf(stderr, "ERROR: Nie podano nazwy pliku\n");
+	if (argc < 2) {
+		fprintf(stderr, "Nie podano sciezki do pliku wejsciowego\n");
 		return 1;
 	}
-	FILE* f = fopen(argv[1], "r");
-	if (f == NULL) {
-		fprintf(stderr, "ERROR: Nie udalo se otworzyc pliku\n");
+	maze m = read_file(argv[1]);
+	if (m == NULL) {
+		fprintf(stderr, "Nie udalo sie zaladowac pliku\n");
 		return 2;
 	}
-	maze m = malloc(sizeof(&m));
-	m->m = 1;
-	m->f = f;
-	if (is_file_correct(m) == 0) {
-		fprintf(stderr, "ERROR: Podany plik nie jest poprawny\n");
-		return 3;
-	}
-	printf("Plik jest prawidlowy\n");
-	int i, j;
-	for (i = 0; i < m->m; i++) {
-		for(j = 0; j < m->n; j++)
-			printf("%c", get_char(m, i, j));
-		printf("\n");
-	}
-	free(m);
-	fclose(f);
+	printf("%d\n", is_wall(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), m));
+	print_maze(m);
+	free_maze(m);
 	return 0;
 }

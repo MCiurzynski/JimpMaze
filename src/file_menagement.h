@@ -1,14 +1,19 @@
+#include "maze.h"
 #ifndef FILE_MENAGEMENT
 #define FILE_MENAGEMENT
 
-typedef struct maze_s {
-	FILE* f;
-	int n;
-	int m;
-} *maze;
+maze read_file(char*);
 
-int is_file_correct(maze);
+int is_txt(char*);
 
-char get_char(maze, int, int);
+int is_binary(char*);
+
+int is_file_correct(FILE *);
+
+int is_bin_file_correct(FILE *);
+
+maze read_maze(FILE *);
+
+maze read_bin_maze(FILE *);
 
 #endif
