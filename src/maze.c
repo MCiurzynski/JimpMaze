@@ -38,7 +38,7 @@ int is_wall(int a, int b, int x, int y, maze m) {
 		}
 		if (x - a != 1)
 			return 2;
-		tmp = get_bit((m->col* 2 - 1) * y + x, m->v);
+		tmp = get_bit((m->col* 2 - 1) * y + a, m->v);
 		return tmp;
 	}
 	else
