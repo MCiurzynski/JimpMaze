@@ -13,7 +13,7 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "Nie udalo sie zaladowac pliku\n");
 		return 2;
 	}
-	printf("%d\n", is_wall(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), m));
+//	printf("%d\n", is_wall(atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), m));
 	print_maze(m);
 	free_maze(m);
 	return 0;

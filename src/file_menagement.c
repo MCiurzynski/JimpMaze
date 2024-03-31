@@ -7,12 +7,13 @@
 
 maze read_file(char* name) {
 	maze m;
-	FILE* f = fopen(name, "r");
-	if (f == NULL) {
-		fprintf(stderr, "Nie udalo sie otworzyc pliku\n");
-		return NULL;
-	}
+	FILE* f;
 	if (is_txt(name) == 1) {
+		f = fopen(name, "r");
+		if (f == NULL) {
+			fprintf(stderr, "Nie udalo sie otworzyc pliku\n");
+			return NULL;
+		}
 		if (is_file_correct(f) == 1) {
 			m = read_maze(f);
 			fclose(f);
@@ -25,6 +26,11 @@ maze read_file(char* name) {
 		}
 	}
 	else if (is_binary(name) == 1) {
+		f = fopen(name, "rb");
+		if (f == NULL) {
+			fprintf(stderr, "Nie udalo sie otworzyc pliku\n");
+			return NULL;
+		}
 		if (is_bin_file_correct(f) == 1) {
 			m = read_bin_maze(f);
 			fclose(f);
@@ -38,7 +44,6 @@ maze read_file(char* name) {
 	}
 	else {
 		fprintf(stderr, "Nieprawidlowe rozszerzenie pliku\n");
-		fclose(f);
 		return NULL;
 	}
 }
@@ -176,20 +181,21 @@ maze read_maze(FILE *f) {
 	if (c == 'P') {
 		m->start_y = row;
 		m->start_x = i % (m->col * 2 + 1);
+		printf("%d %d\n", m->start_x, m->start_y);
 		if (m->start_x == 0) {
 			m->start_y = (m->start_y - 1) / 2;
 			m->start_direction = 'W';
 		}
-		if (m->start_x == m->col * 2) {
+		else if (m->start_x == m->col * 2) {
 			m->start_x = (m->start_x - 1) / 2;
 			m->start_y = (m->start_y - 1) / 2;
 			m->start_direction = 'E';
 		}
-		if (m->start_y == 0) {
+		else if (m->start_y == 0) {
 			m->start_x = (m->start_x - 1) / 2;
 			m->start_direction = 'N';
 		}
-		if (m->start_y == m->row * 2) {
+		else if (m->start_y == m->row * 2) {
 			m->start_x = (m->start_x - 1) / 2;
 			m->start_y = (m->start_y - 1) / 2;
 			m->start_direction = 'S';
@@ -202,16 +208,16 @@ maze read_maze(FILE *f) {
 			m->end_y = (m->end_y - 1) / 2;
 			m->end_direction = 'W';
 		}
-		if (m->end_x == m->col * 2) {
+		else if (m->end_x == m->col * 2) {
 			m->end_x = (m->end_x - 1) / 2;
 			m->end_y = (m->end_y - 1) / 2;
 			m->end_direction = 'E';
 		}
-		if (m->end_y == 0) {
+		else if (m->end_y == 0) {
 			m->end_x = (m->end_x - 1) / 2;
 			m->end_direction = 'N';
 		}
-		if (m->end_y == m->row * 2) {
+		else if (m->end_y == m->row * 2) {
 			m->end_x = (m->end_x - 1) / 2;
 			m->end_y = (m->end_y - 1) / 2;
 			m->end_direction = 'S';
@@ -275,6 +281,24 @@ maze read_maze(FILE *f) {
 	return m;
 }
 
+char get_char(buff bin, FILE* f, uint8_t sep) {
+	uint8_t c;
+	int x;
+	if (bin->n <= 0) {
+		do {
+			x = fread(&c, 1, 1, f);
+		}
+		while (c != sep || x != 1);
+		if (x == 0)
+			return 0;
+		fread(&(bin->c), 1, 1, f);
+		fread(&(bin->n), 1, 1, f);
+		bin->n++;
+	}
+	bin->n--;
+	return bin->c;
+}
+
 maze read_bin_maze(FILE *f) {
 	fseek(f, 0, SEEK_SET);
 	uint8_t esc;
@@ -289,8 +313,7 @@ maze read_bin_maze(FILE *f) {
 	uint8_t sep;
 	uint8_t wall;
 	uint8_t path;
-	uint8_t c;
-	char buff[257];
+	struct bin_buff bin = {0, 0};
 	fseek(f, 4, SEEK_CUR);
 	fread(&esc, 1, 1, f);
 	fread(&col, 2, 1, f);
@@ -320,16 +343,16 @@ maze read_bin_maze(FILE *f) {
 		m->start_y = (start_y - 1) / 2;
 		m->start_direction = 'W';
 	}
-	if (start_x == m->col * 2) {
+	else if (start_x == m->col * 2) {
 		m->start_x = (start_x - 1) / 2;
 		m->start_y = (start_y - 1) / 2;
 		m->start_direction = 'E';
 	}
-	if (start_y == 0) {
+	else if (start_y == 0) {
 		m->start_x = (start_x - 1) / 2;
 		m->start_direction = 'N';
 	}
-	if (start_y == m->row * 2) {
+	else if (start_y == m->row * 2) {
 		m->start_x = (start_x - 1) / 2;
 		m->start_y = (start_y - 1) / 2;
 		m->start_direction = 'S';
@@ -338,16 +361,16 @@ maze read_bin_maze(FILE *f) {
 		m->end_y = (end_y - 1) / 2;
 		m->end_direction = 'W';
 	}
-	if (end_x == m->col * 2) {
+	else if (end_x == m->col * 2) {
 		m->end_x = (end_x - 1) / 2;
 		m->end_y = (end_y - 1) / 2;
 		m->end_direction = 'E';
 	}
-	if (end_y == 0) {
+	else if (end_y == 0) {
 		m->end_x = (end_x - 1) / 2;
 		m->end_direction = 'N';
 	}
-	if (end_y == m->row * 2) {
+	else if (end_y == m->row * 2) {
 		m->end_x = (end_x - 1) / 2;
 		m->end_y = (end_y - 1) / 2;
 		m->end_direction = 'S';
@@ -358,7 +381,49 @@ maze read_bin_maze(FILE *f) {
 		free(m);
 		return NULL;
 	}
-	printf("%d %d %d %d %d %d\n", m->col, m->row, start_x, start_y, end_x, end_y);
 	printf("%d %d %d %d %d %d\n", m->col, m->row, m->start_x, m->start_y, m->end_x, m->end_y);
+	int i, j, n = 0;
+	for (i = 0; i < m->col * 2 + 2; i++) {
+		get_char(&bin, f, sep);
+	}
+	for (i = 0; i < m->col - 1; i++) {
+		get_char(&bin, f, sep);
+		if (get_char(&bin, f, sep) == 'X') {
+			set_bit(1, n, m->v);
+			n++;
+		}
+		else {
+			set_bit(0, n, m->v);
+			n++;
+		}
+	}
+	for (i = 0; i < m->row - 1; i++) {
+		for (j = 0; j < 2; j++)
+			get_char(&bin, f, sep);
+		for (j = 0; j < m->col; j++) {
+			get_char(&bin, f, sep);
+			if (get_char(&bin, f, sep) == 'X') {
+				set_bit(1, n, m->v);
+				n++;
+			}
+			else {
+				set_bit(0, n, m->v);
+				n++;
+			}
+		}
+		for (j = 0; j < 2; j++)
+			get_char(&bin, f, sep);
+		for (j = 0; j < m->col - 1; j++) {
+			get_char(&bin, f, sep);
+			if (get_char(&bin, f, sep) == 'X') {
+				set_bit(1, n, m->v);
+				n++;
+			}
+			else {
+				set_bit(0, n, m->v);
+				n++;
+			}
+		}
+	}
 	return m;
 }
