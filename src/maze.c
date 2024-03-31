@@ -2,18 +2,18 @@
 #include <stdio.h>
 #include "maze.h"
 
-void set_bit(int value, int n, uint16_t* v) {
+void set_bit(int value, int n, uint16_t* v) { //Funkcja zapisująca bit do tablicy
 	if (value != 0)
 		v[n / BIT_TABLE_SIZE] |= 1 << (n % BIT_TABLE_SIZE);
 	else
 		v[n / BIT_TABLE_SIZE] &= ~(1 << (n % BIT_TABLE_SIZE));
 }
 
-int get_bit(int n, uint16_t* v) {
+int get_bit(int n, uint16_t* v) { //Funkcja zwracająca bit z tablicy
 	return ((v[n / BIT_TABLE_SIZE] & (1 << (n % BIT_TABLE_SIZE))) != 0);
 }
 
-int is_wall(int a, int b, int x, int y, maze m) {
+int is_wall(int a, int b, int x, int y, maze m) { //Funcja zwracająca informacje czy istnieje połączenie między podanymi węzłami
 	int tmp;
 	if (a == x && b == y)
 		return 3;
@@ -45,14 +45,14 @@ int is_wall(int a, int b, int x, int y, maze m) {
 		return 2;
 }
 
-void free_maze(maze m) {
+void free_maze(maze m) { //Funcja zwalniająca pamięć struktury labiryntu
 	if (m != NULL && m->v != NULL)
 		free(m->v);
 	if (m != NULL)
 		free(m);
 }
 
-void print_maze(maze m) {
+void print_maze(maze m) { //Funkcja wypsiująca labirynt
 	int i, j, n = 0;
 	for (i = 0; i < m->col * 2 + 1; i++)
 		printf("X");
