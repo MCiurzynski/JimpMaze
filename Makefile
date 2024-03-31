@@ -4,5 +4,11 @@ all:
 test:
 	bin/main.out dane/maze.txt
 
+testbin:
+	bin/main.out dane/maze.bin
+
+testbig:
+	bin/main.out dane/maze-512x512.txt
+
 clean:
 	rm -f bin/*

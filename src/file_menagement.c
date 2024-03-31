@@ -281,18 +281,18 @@ maze read_maze(FILE *f) {
 	return m;
 }
 
-char get_char(buff bin, FILE* f, uint8_t sep) {
+char get_char(buff bin) {
 	uint8_t c;
 	int x;
 	if (bin->n <= 0) {
 		do {
-			x = fread(&c, 1, 1, f);
+			x = fread(&c, 1, 1, bin->f);
 		}
-		while (c != sep || x != 1);
+		while (c != bin->sep || x != 1);
 		if (x == 0)
 			return 0;
-		fread(&(bin->c), 1, 1, f);
-		fread(&(bin->n), 1, 1, f);
+		fread(&(bin->c), 1, 1, bin->f);
+		fread(&(bin->n), 1, 1, bin->f);
 		bin->n++;
 	}
 	bin->n--;
@@ -313,7 +313,6 @@ maze read_bin_maze(FILE *f) {
 	uint8_t sep;
 	uint8_t wall;
 	uint8_t path;
-	struct bin_buff bin = {0, 0};
 	fseek(f, 4, SEEK_CUR);
 	fread(&esc, 1, 1, f);
 	fread(&col, 2, 1, f);
@@ -383,12 +382,13 @@ maze read_bin_maze(FILE *f) {
 	}
 	printf("%d %d %d %d %d %d\n", m->col, m->row, m->start_x, m->start_y, m->end_x, m->end_y);
 	int i, j, n = 0;
+	struct bin_buff bin = {0, 0, f, sep};
 	for (i = 0; i < m->col * 2 + 2; i++) {
-		get_char(&bin, f, sep);
+		get_char(&bin);
 	}
 	for (i = 0; i < m->col - 1; i++) {
-		get_char(&bin, f, sep);
-		if (get_char(&bin, f, sep) == 'X') {
+		get_char(&bin);
+		if (get_char(&bin) == 'X') {
 			set_bit(1, n, m->v);
 			n++;
 		}
@@ -399,10 +399,10 @@ maze read_bin_maze(FILE *f) {
 	}
 	for (i = 0; i < m->row - 1; i++) {
 		for (j = 0; j < 2; j++)
-			get_char(&bin, f, sep);
+			get_char(&bin);
 		for (j = 0; j < m->col; j++) {
-			get_char(&bin, f, sep);
-			if (get_char(&bin, f, sep) == 'X') {
+			get_char(&bin);
+			if (get_char(&bin) == 'X') {
 				set_bit(1, n, m->v);
 				n++;
 			}
@@ -412,10 +412,10 @@ maze read_bin_maze(FILE *f) {
 			}
 		}
 		for (j = 0; j < 2; j++)
-			get_char(&bin, f, sep);
+			get_char(&bin);
 		for (j = 0; j < m->col - 1; j++) {
-			get_char(&bin, f, sep);
-			if (get_char(&bin, f, sep) == 'X') {
+			get_char(&bin);
+			if (get_char(&bin) == 'X') {
 				set_bit(1, n, m->v);
 				n++;
 			}
