@@ -82,7 +82,7 @@ int is_binary(char *name) { //Funkcja sprawdzająca czy podany plik jest .bin
 int is_file_correct(FILE* f) { //Funkcja sprawdzająca czy podany plik tekstowy jest poprawny
 	char c;
 	char buff[MAX_SIZE];
-	int p = 0, k = 0, col, row, len;
+	int p = 0, k = 0, col, row, len, i;
 	while ((c = fgetc(f)) != EOF) { //Sprawdzanie ilości wejść i wyjść
 		if (c != 'X' && c != ' ' && c != '\n' && c != 'P' && c != 'K')
 			return 0;
@@ -111,6 +111,16 @@ int is_file_correct(FILE* f) { //Funkcja sprawdzająca czy podany plik tekstowy 
 			return 0;
 		if (buff[col - 1] != '\n') //Sprawdzanie czy wiersz nie jest większy niż MAX_SIZE
 			return 0;
+		if (row % 2 == 0) {
+			for (i = 1; i < col - 1; i += 2)
+				if (buff[i] != ' ')
+					return 0;
+		}
+		else {
+			for (i = 2; i < col; i += 2)
+				if (buff[i] != 'X')
+					return 0;
+		}
 	}
 	if (col < 4 || row < 3) //Sprawdzanie czy labirynt ma minimanlą wielkość
 		return 0;
@@ -118,37 +128,13 @@ int is_file_correct(FILE* f) { //Funkcja sprawdzająca czy podany plik tekstowy 
 }
 
 int is_bin_file_correct(FILE *f) { //Funkcja sprawdzająca czy podany plik binarny jest prawidłowy
-	uint8_t esc;
-	uint16_t col;
-	uint16_t row;
-	uint16_t start_x;
-	uint16_t start_y;
-	uint16_t end_x;
-	uint16_t end_y;
-	uint32_t counter;
-	uint32_t solution;
-	uint8_t sep;
-	uint8_t wall;
-	uint8_t path;
+	header h;
 	uint8_t c;
 	int sepcount = 0, tmp = 0, symbols = 0;
-	fseek(f, 4, SEEK_CUR); //Pobieranie danych z pliku binarnego
-	fread(&esc, 1, 1, f);
-	fread(&col, 2, 1, f);
-	fread(&row, 2, 1, f);
-	fread(&start_x, 2, 1, f);
-	fread(&start_y, 2, 1, f);
-	fread(&end_x, 2, 1, f);
-	fread(&end_y, 2, 1, f);
-	fseek(f, 12, SEEK_CUR);
-	fread(&counter, 4, 1, f);
-	fread(&solution, 4, 1, f);
-	fread(&sep, 1, 1, f);
-	fread(&wall, 1, 1, f);
-	if (fread(&path, 1, 1, f) == 0) //Sprawdzanie czy plik się nie skończył
+	if (fread(&h, sizeof h, 1, f) != 1) //Sprawdzanie czy plik się nie skończył
 		return 0;
 	while(fread(&c, 1, 1, f) == 1) { //Liczenie słów kluczowych i symboli
-		if (c == sep) {
+		if (c == h.sep) {
 			tmp = 0;
 			sepcount++;
 		}
@@ -156,9 +142,9 @@ int is_bin_file_correct(FILE *f) { //Funkcja sprawdzająca czy podany plik binar
 			symbols += c + 1;
 		tmp++;
 	}
-	if (sepcount != counter) //Sprawdzanie zgodności ilości słów kluczowych i symboli z wartościami podanymi w pliku
+	if (sepcount != h.counter) //Sprawdzanie zgodności ilości słów kluczowych i symboli z wartościami podanymi w pliku
 		return 0;
-	if (symbols != col * row)
+	if (symbols != h.col * h.row)
 		return 0;
 	return 1;
 }
@@ -286,7 +272,7 @@ char get_char(buff bin) { //Funkcja pomocnicza zwracająca znaki labiryntu z pli
 		do {
 			x = fread(&c, 1, 1, bin->f); //Szukanie separatora
 		}
-		while (c != bin->sep || x != 1);
+		while (c != bin->sep && x != 1);
 		if (x == 0)
 			return 0;
 		fread(&(bin->c), 1, 1, bin->f);
@@ -299,77 +285,53 @@ char get_char(buff bin) { //Funkcja pomocnicza zwracająca znaki labiryntu z pli
 
 maze read_bin_maze(FILE *f) { //Funkcja wczytująca dane z pliku binarnego
 	fseek(f, 0, SEEK_SET);
-	uint8_t esc;
-	uint16_t col;
-	uint16_t row;
-	uint16_t start_x;
-	uint16_t start_y;
-	uint16_t end_x;
-	uint16_t end_y;
-	uint32_t counter;
-	uint32_t solution;
-	uint8_t sep;
-	uint8_t wall;
-	uint8_t path;
-	fseek(f, 4, SEEK_CUR); //Wczytywanie podstawowych danych z pliku binarnego
-	fread(&esc, 1, 1, f);
-	fread(&col, 2, 1, f);
-	fread(&row, 2, 1, f);
-	fread(&start_x, 2, 1, f);
-	fread(&start_y, 2, 1, f);
-	fread(&end_x, 2, 1, f);
-	fread(&end_y, 2, 1, f);
-	fseek(f, 12, SEEK_CUR);
-	fread(&counter, 4, 1, f);
-	fread(&solution, 4, 1, f);
-	fread(&sep, 1, 1, f);
-	fread(&wall, 1, 1, f);
-	fread(&path, 1, 1, f);
+	header h;
+	fread(&h, sizeof h, 1, f);
 	maze m = malloc(sizeof(*m));
 	if (m == NULL) {
 		fprintf(stderr, "Nie udalo sie zaalokowac pamieci\n");
 		return NULL;
 	}
-	start_x--;
-	start_y--;
-	end_x--;
-	end_y--;
-	m->col = (col - 1) / 2;
-	m->row = (row - 1) / 2;
-	if (start_x == 0) { //Zapisywanie współrzednych i ścian labiryntu
-		m->start_y = (start_y - 1) / 2;
+	h.start_x--;
+	h.start_y--;
+	h.end_x--;
+	h.end_y--;
+	m->col = (h.col - 1) / 2;
+	m->row = (h.row - 1) / 2;
+	if (h.start_x == 0) { //Zapisywanie współrzednych i ścian labiryntu
+		m->start_y = (h.start_y - 1) / 2;
 		m->start_direction = 'W';
 	}
-	else if (start_x == m->col * 2) {
-		m->start_x = (start_x - 1) / 2;
-		m->start_y = (start_y - 1) / 2;
+	else if (h.start_x == m->col * 2) {
+		m->start_x = (h.start_x - 1) / 2;
+		m->start_y = (h.start_y - 1) / 2;
 		m->start_direction = 'E';
 	}
-	else if (start_y == 0) {
-		m->start_x = (start_x - 1) / 2;
+	else if (h.start_y == 0) {
+		m->start_x = (h.start_x - 1) / 2;
 		m->start_direction = 'N';
 	}
-	else if (start_y == m->row * 2) {
-		m->start_x = (start_x - 1) / 2;
-		m->start_y = (start_y - 1) / 2;
+	else if (h.start_y == m->row * 2) {
+		m->start_x = (h.start_x - 1) / 2;
+		m->start_y = (h.start_y - 1) / 2;
 		m->start_direction = 'S';
 	}
-	if (end_x == 0) {
-		m->end_y = (end_y - 1) / 2;
+	if (h.end_x == 0) {
+		m->end_y = (h.end_y - 1) / 2;
 		m->end_direction = 'W';
 	}
-	else if (end_x == m->col * 2) {
-		m->end_x = (end_x - 1) / 2;
-		m->end_y = (end_y - 1) / 2;
+	else if (h.end_x == m->col * 2) {
+		m->end_x = (h.end_x - 1) / 2;
+		m->end_y = (h.end_y - 1) / 2;
 		m->end_direction = 'E';
 	}
-	else if (end_y == 0) {
-		m->end_x = (end_x - 1) / 2;
+	else if (h.end_y == 0) {
+		m->end_x = (h.end_x - 1) / 2;
 		m->end_direction = 'N';
 	}
-	else if (end_y == m->row * 2) {
-		m->end_x = (end_x - 1) / 2;
-		m->end_y = (end_y - 1) / 2;
+	else if (h.end_y == m->row * 2) {
+		m->end_x = (h.end_x - 1) / 2;
+		m->end_y = (h.end_y - 1) / 2;
 		m->end_direction = 'S';
 	}
 	m->v = calloc(((m->col - 1) * m->row + (m->row - 1) * m->col) / 16 + 1, sizeof(uint16_t));
@@ -379,13 +341,13 @@ maze read_bin_maze(FILE *f) { //Funkcja wczytująca dane z pliku binarnego
 		return NULL;
 	}
 	int i, j, n = 0;
-	struct bin_buff bin = {0, 0, f, sep};
+	struct bin_buff bin = {0, 0, f, h.sep};
 	for (i = 0; i < m->col * 2 + 2; i++) { //Odrzucanie zbędnych danych
 		get_char(&bin);
 	}
 	for (i = 0; i < m->col - 1; i++) { //Wczytywanie pierwszego wiersza przejść
 		get_char(&bin);
-		if (get_char(&bin) == 'X') {
+		if (get_char(&bin) == h.wall) {
 			set_bit(1, n, m->v);
 			n++;
 		}
@@ -399,7 +361,7 @@ maze read_bin_maze(FILE *f) { //Funkcja wczytująca dane z pliku binarnego
 			get_char(&bin);
 		for (j = 0; j < m->col; j++) {
 			get_char(&bin);
-			if (get_char(&bin) == 'X') {
+			if (get_char(&bin) == h.wall) {
 				set_bit(1, n, m->v);
 				n++;
 			}
@@ -412,7 +374,7 @@ maze read_bin_maze(FILE *f) { //Funkcja wczytująca dane z pliku binarnego
 			get_char(&bin);
 		for (j = 0; j < m->col - 1; j++) {
 			get_char(&bin);
-			if (get_char(&bin) == 'X') {
+			if (get_char(&bin) == h.wall) {
 				set_bit(1, n, m->v);
 				n++;
 			}
