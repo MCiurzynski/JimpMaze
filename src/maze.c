@@ -142,11 +142,22 @@ void free_maze(maze m) { //Funcja zwalniająca pamięć struktury labiryntu
 		free(m);
 }
 
-void print_maze(maze m) { //Funkcja wypsiująca labirynt
+void print_maze(maze m) { //Funkcja wypisująca labirynt
 	int i, j, n = 0;
-	for (i = 0; i < m->col * 2 + 1; i++)
-		printf("X");
-	printf("\nX ");
+	for (i = 0; i < m->col * 2 + 1; i++) {
+		if (m->start_direction == 'N' && i == (m->start_x * 2 + 1))
+			printf("P");
+		else if (m->end_direction == 'N' && i == (m->end_x * 2 + 1))
+			printf("K");
+		else
+			printf("X");
+	}
+	if (m->start_direction == 'W' && m->start_y == 0)
+		printf("\nP ");
+	else if (m->end_direction == 'W' && m->end_y == 0)
+		printf("\nK ");
+	else
+		printf("\nX ");
 	for (i = 0; i < m->col - 1; i++) {
 		if (get_bit(n, m->v) == 1)
 			printf("X");
@@ -156,7 +167,12 @@ void print_maze(maze m) { //Funkcja wypsiująca labirynt
 		printf(" ");
 
 	}
-	printf("X\n");
+	if (m->start_direction == 'E' && m->start_y == 0)
+		printf("P\n");
+	else if (m->end_direction == 'E' && m->end_y == 0)
+		printf("K\n");
+	else
+		printf("X\n");
 	for (i = 0; i < m->row - 1; i++){
 		printf("X");
 		for (j = 0; j < m->col; j++) {
@@ -167,7 +183,12 @@ void print_maze(maze m) { //Funkcja wypsiująca labirynt
 			n++;
 			printf("X");
 		}
-		printf("\nX ");
+		if (m->start_direction == 'W' && i + 1 == m->start_y)
+			printf("\nP ");
+		else if (m->end_direction == 'W' && i + 1 == m->end_y)
+			printf("\nK ");
+		else
+			printf("\nX ");
 		for (j = 0; j < m->col - 1; j++) {
 			if (get_bit(n, m->v) == 1)
 				printf("X");
@@ -176,9 +197,19 @@ void print_maze(maze m) { //Funkcja wypsiująca labirynt
 			n++;
 			printf(" ");
 		}
-		printf("X\n");
+		if (m->start_direction == 'E' && i + 1 == m->start_y)
+			printf("P\n");
+		else if (m->end_direction == 'E' && i + 1 == m->end_y)
+			printf("K\n");
+		else
+			printf("X\n");
 	}
-	for (i = 0; i < m->col * 2 + 1; i++)
-		printf("X");
-	printf("\n");
+	for (i = 0; i < m->col * 2 + 1; i++) {
+		if (m->start_direction == 'S' && i == (m->start_x * 2 + 1))
+			printf("P");
+		else if (m->end_direction == 'S' && i == (m->end_x * 2 + 1))
+			printf("K");
+		else
+			printf("X");
+	}
 }
