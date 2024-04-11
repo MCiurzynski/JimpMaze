@@ -1,5 +1,3 @@
-#include <stdint.h>
-
 #ifndef MAZE_H
 #define MAZE_H
 
@@ -17,11 +15,19 @@ typedef struct mase_struct {
 	char end_direction;
 } *maze;
 
+void print_help();
+
+maze read_file(char*);
+
+int is_txt(char*);
+
+int is_binary(char*);
+
 void set_bit(int, int, uint16_t*);
 
 int get_bit(int, uint16_t*);
 
-int is_wall(int, int, int, int, maze);
+int is_wall(uint16_t, uint16_t, uint16_t, uint16_t, maze);
 
 void free_maze(maze);
 

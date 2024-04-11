@@ -10,5 +10,8 @@ testbin:
 testbig:
 	bin/main.out dane/maze-512x512.txt
 
+testbigram:
+	valgrind bin/main.out dane/maze-512x512.txt
+
 clean:
 	rm -f bin/*
