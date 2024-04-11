@@ -1,13 +1,21 @@
-XXXXXXXXXXX
-P         X
-X X XXXXX X
-X X X   X X
-X X X XXX X
-X X X X   X
-XXX X X XXX
-X   X X   X
-X X X XXX X
-X X X X   X
-X XXX X XXX
-X     X   K
-XXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXXXX
+P   X       X       X
+X X X XXXXX XXX X X X
+X X   X   X   X X X X
+X XXXXXXX XXX XXX X X
+X X       X   X   X X
+X XXX XXX X XXX XXX X
+X X   X   X   X   X X
+X X XXXXXXXXXXXXX X X
+X X   X     X   X X X
+X XXX X X X X X X XXX
+X   X   X X   X X   X
+XXX X XXX XXXXX XXX X
+X   X   X X   X X   X
+X XXXXXXX X X X X X X
+X   X     X X X   X X
+XXX X XXXXX X XXXXX X
+X X X X   X X     X X
+X X X X XXX XXX XXX X
+X     X       X     K
+XXXXXXXXXXXXXXXXXXXXX
