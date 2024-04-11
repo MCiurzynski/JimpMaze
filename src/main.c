@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
 		printf("%d\n", convert_to_binary(m, argv[optind], bin_file));
 		printf("weszlo\n");
 	}
-	//print_maze(m);
+	print_maze(m);
 	free_maze(m);
 	return 0;
 }
