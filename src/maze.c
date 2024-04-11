@@ -15,8 +15,8 @@ void print_help() {
 	printf("lub stworzyc plik binarny i w nim zapisac labirynt oraz sciezke jesli zostal podany plik tekstowy.\n");
 	printf("Opcje:\n");
 	printf(" -h\twyświetla krotki opis programu, sposob jego uzycia oraz opcjonalne parametry\n");
-	printf(" -f\tumozliwia zapis znalezionej sciezki do pliku binarnego. Mozna podac tylko w przypadku pliku binarnego\n");
-	printf(" -b\tumozliwia zapis labiryntu i znalezionej sciezki w postaci pliku binarnego w lokalizacji podanej po parametrze. Dziala jedynie w przypadku pliku tekstowego.\n");
+	printf(" -f\tumozliwia zapis znalezionej sciezki do pliku binarnego. Mozna podac tylko w przypadku pliku binarnego lub po podaniu opcji -b dla pliku tekstowego\n");
+	printf(" -b\tumozliwia zapis labiryntu w postaci pliku binarnego w lokalizacji podanej po parametrze. Dziala jedynie w przypadku pliku tekstowego.\n");
 }
 
 maze read_file(char* name) { // Główna funkcja wczytująca pliki

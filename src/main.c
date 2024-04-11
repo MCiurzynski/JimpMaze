@@ -50,8 +50,10 @@ int main(int argc, char **argv) {
 		return 7;
 	}
 	if (bflag == 1) {
-		printf("%d\n", convert_to_binary(m, argv[optind], bin_file));
-		printf("weszlo\n");
+		if (convert_to_binary(m, argv[optind], bin_file) != 0) {
+			fprintf(stderr, "Nie udalo sie przekonwertowac na plik binarny\n");
+			fflag = 0;
+		}
 	}
 	print_maze(m);
 	free_maze(m);
