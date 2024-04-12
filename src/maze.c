@@ -15,8 +15,9 @@ void print_help() {
 	printf("lub stworzyc plik binarny i w nim zapisac labirynt oraz sciezke jesli zostal podany plik tekstowy.\n");
 	printf("Opcje:\n");
 	printf(" -h\twyświetla krotki opis programu, sposob jego uzycia oraz opcjonalne parametry\n");
-	printf(" -f\tumozliwia zapis znalezionej sciezki do pliku binarnego. Mozna podac tylko w przypadku pliku binarnego lub po podaniu opcji -b dla pliku tekstowego\n");
+	printf(" -f\tumozliwia zapis znalezionej sciezki do pliku binarnego. Mozna podac w przypadku pliku binarnego lub po podaniu opcji -b dla pliku tekstowego\n");
 	printf(" -b\tumozliwia zapis labiryntu w postaci pliku binarnego w lokalizacji podanej po parametrze. Dziala jedynie w przypadku pliku tekstowego.\n");
+	printf(" -t\tumożliwia zapis labiryntu w postaci tekstowej w lokalizacji podanej po parametrze. Dziala jednynie w przypadku pliku binarnego\n");
 }
 
 maze read_file(char* name) { // Główna funkcja wczytująca pliki
@@ -142,74 +143,76 @@ void free_maze(maze m) { //Funcja zwalniająca pamięć struktury labiryntu
 		free(m);
 }
 
-void print_maze(maze m) { //Funkcja wypisująca labirynt
+void fprint_maze(FILE* f, maze m) { //Funkcja wypisująca labirynt
 	int i, j, n = 0;
 	for (i = 0; i < m->col * 2 + 1; i++) {
 		if (m->start_direction == 'N' && i == (m->start_x * 2 + 1))
-			printf("P");
+			fprintf(f, "P");
 		else if (m->end_direction == 'N' && i == (m->end_x * 2 + 1))
-			printf("K");
+			fprintf(f, "K");
 		else
-			printf("X");
+			fprintf(f, "X");
 	}
 	if (m->start_direction == 'W' && m->start_y == 0)
-		printf("\nP ");
+		fprintf(f, "\nP ");
 	else if (m->end_direction == 'W' && m->end_y == 0)
-		printf("\nK ");
+		fprintf(f, "\nK ");
 	else
-		printf("\nX ");
+		fprintf(f, "\nX ");
 	for (i = 0; i < m->col - 1; i++) {
 		if (get_bit(n, m->v) == 1)
-			printf("X");
+			fprintf(f, "X");
 		else
-			printf(" ");
+			fprintf(f, " ");
 		n++;
-		printf(" ");
+		fprintf(f, " ");
 
 	}
 	if (m->start_direction == 'E' && m->start_y == 0)
-		printf("P\n");
+		fprintf(f, "P\n");
 	else if (m->end_direction == 'E' && m->end_y == 0)
-		printf("K\n");
+		fprintf(f, "K\n");
 	else
-		printf("X\n");
+		fprintf(f, "X\n");
 	for (i = 0; i < m->row - 1; i++){
-		printf("X");
+		fprintf(f, "X");
 		for (j = 0; j < m->col; j++) {
 			if(get_bit(n, m->v) == 1)
-				printf("X");
+				fprintf(f, "X");
 			else
-				printf(" ");
+				fprintf(f, " ");
 			n++;
-			printf("X");
+			fprintf(f, "X");
 		}
 		if (m->start_direction == 'W' && i + 1 == m->start_y)
-			printf("\nP ");
+			fprintf(f, "\nP ");
 		else if (m->end_direction == 'W' && i + 1 == m->end_y)
-			printf("\nK ");
+			fprintf(f, "\nK ");
 		else
-			printf("\nX ");
+			fprintf(f, "\nX ");
 		for (j = 0; j < m->col - 1; j++) {
 			if (get_bit(n, m->v) == 1)
-				printf("X");
+				fprintf(f, "X");
 			else
-				printf(" ");
+				fprintf(f, " ");
 			n++;
-			printf(" ");
+			fprintf(f, " ");
 		}
 		if (m->start_direction == 'E' && i + 1 == m->start_y)
-			printf("P\n");
+			fprintf(f, "P\n");
 		else if (m->end_direction == 'E' && i + 1 == m->end_y)
-			printf("K\n");
+			fprintf(f, "K\n");
 		else
-			printf("X\n");
+			fprintf(f, "X\n");
 	}
 	for (i = 0; i < m->col * 2 + 1; i++) {
 		if (m->start_direction == 'S' && i == (m->start_x * 2 + 1))
-			printf("P");
+			fprintf(f, "P");
 		else if (m->end_direction == 'S' && i == (m->end_x * 2 + 1))
-			printf("K");
+			fprintf(f, "K");
 		else
-			printf("X");
+			fprintf(f, "X");
 	}
+	if (f == stdout)
+		printf("\n");
 }
