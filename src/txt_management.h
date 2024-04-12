@@ -7,4 +7,6 @@ int is_file_correct(FILE *);
 
 maze read_maze(FILE *);
 
+void fprint_maze(FILE*, maze);
+
 #endif

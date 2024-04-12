@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include "maze.h"
 #include "binary.h"
+#include "txt_management.h"
 
 int main(int argc, char **argv) {
 	int c, bflag = 0, fflag = 0, tflag = 0;
