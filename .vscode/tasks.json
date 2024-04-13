@@ -12,6 +12,7 @@
 				"maze.c",
 				"txt_management.c",
 				"binary.c",
+				"find_path.c",
 				"-o",
 				"${fileDirname}/../bin/main.out"
 			],

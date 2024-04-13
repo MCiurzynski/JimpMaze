@@ -5,6 +5,7 @@
 #include "maze.h"
 #include "binary.h"
 #include "txt_management.h"
+#include "find_path.h"
 
 int main(int argc, char **argv) {
 	int c, bflag = 0, fflag = 0, tflag = 0;
@@ -79,6 +80,7 @@ int main(int argc, char **argv) {
 			}
 		}
 	}
+	printf("%d\n", bfs(m->start_x, m->start_y, m->end_x, m->end_y, m));
 	free_maze(m);
 	return 0;
 }
