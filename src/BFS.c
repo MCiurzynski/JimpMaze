@@ -142,6 +142,7 @@ int BFS( maze maze ){
 		printf("%d\n", n);
 		
 		if( n == end ){
+			printf("Licze na glitche: %d\n", parentsGet( parents, n ));
 			break;
 		}
 		
@@ -162,28 +163,28 @@ int BFS( maze maze ){
 		printf("\n");
 		
 		if( is_wall( nX, nY, nX-1, nY, maze ) == 0 ){
-			int nTemp = nX-1 * maze->col + nY;
+			int nTemp = (nY) * maze->col + nX-1;
 			if( !get_bit( nTemp, isVisited ) ){
 				queueAdd( queue, nTemp );
 				parentsAdd( parents, n, nTemp );
 			}
 		}
 		if( is_wall( nX, nY, nX+1, nY, maze ) == 0 ){
-                        int nTemp = nX+1 * maze->col + nY;
+                        int nTemp = (nY) * maze->col + nX+1;
                         if( !get_bit( nTemp, isVisited ) ){
                                 queueAdd( queue, nTemp );
 				parentsAdd( parents, n, nTemp );
                         }
                 }
 		if( is_wall( nX, nY, nX, nY-1, maze ) == 0 ){
-                        int nTemp = nX * maze->col + nY-1;
+                        int nTemp = (nY-1) * maze->col + nX;
                         if( !get_bit( nTemp, isVisited ) ){
                                 queueAdd( queue, nTemp );
 				parentsAdd( parents, n, nTemp );
                         }       
                 }
 		if( is_wall( nX, nY, nX, nY+1, maze ) == 0 ){
-                        int nTemp = nX * maze->col + nY+1;
+                        int nTemp = (nY+1) * maze->col + nX;
                         if( !get_bit( nTemp, isVisited ) ){
                                 queueAdd( queue, nTemp );
 				parentsAdd( parents, n, nTemp );
