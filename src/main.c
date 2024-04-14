@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include "maze.h"
 #include "binary.h"
+#include "BFS.h"
 
 int main(int argc, char **argv) {
 	int c, bflag = 0, fflag = 0;
@@ -54,6 +55,9 @@ int main(int argc, char **argv) {
 		printf("weszlo\n");
 	}
 	//print_maze(m);
+	
+	printf( "Wynik: %d", BFS(m) );
+	
 	free_maze(m);
 	return 0;
 }

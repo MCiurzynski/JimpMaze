@@ -16,17 +16,27 @@ bool queueAdd( queue_t, int );
 
 int queuePop( queue_t );
 
-FILE * parentsInit( int );
+FILE * charFileInit( int, char* );
+
+//FILE * parentsInit( int );
 
 unsigned char* intToChars( int );
 
-int charsToInt( char* );
+int charsToInt( unsigned char* );
 
 void parentsAdd( FILE *, int, int );
 
-int parentsGet( FILE *, int );
+int intParentsGet( FILE *, int );
 
 int BFS( maze );
+
+int pathLength( FILE *, int, int );
+
+char *pathToFile( FILE *, int, int, int );
+
+void fileTest( FILE *, int );
+
+void pathConvert( char *, maze, int );
 
 
 #endif
