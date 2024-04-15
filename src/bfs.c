@@ -57,7 +57,7 @@ int intParentsGet( FILE *parents, int child ){
 	return charsToInt( parentToChars );
 }
 
-int BFS( maze maze, char* bin_file ){
+int bfs( maze maze, char* bin_file ){
 	
 	uint16_t *isVisited = calloc( maze->row * maze->col, sizeof(uint16_t) );
 	if (isVisited == NULL) {

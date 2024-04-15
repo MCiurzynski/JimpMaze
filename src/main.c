@@ -106,11 +106,11 @@ int main(int argc, char **argv) {
 		return 112;
 	}
 	if (fflag == 1) {
-		BFS(m, bin_file);
+		bfs(m, bin_file);
 		//find_path_to_bin(m, bin_file);
 	}
 
-	//BFS(m, bin_file);
+	//bfs(m, bin_file);
 
 	free_maze(m);
 	return 0;
