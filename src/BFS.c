@@ -89,7 +89,7 @@ FILE * charFileInit( int size, char* fileName ){
 }
 
 unsigned char* intToChars(int number) {
-	unsigned static char charArray [3];
+	unsigned static char charArray[3];
 	charArray[0] = (number >> 16) & 0xFF;
 	charArray[1] = (number >> 8) & 0xFF;
 	charArray[2] = number & 0xFF; 
@@ -328,20 +328,19 @@ void pathConvert( char *ogPath, maze maze, int size){
 		
 		
 		if( firstDirection != secondDirection ){
-		
-			fprintf( convertedPath, "%s %d\n", "FORWARD", count );
-			count = 1;
+			
+			if( count != 0){
+				fprintf( convertedPath, "%s %d\n", "FORWARD", count );
+				count = 1;
+			} else{
+				fprintf( convertedPath, "%s\n", "START");
+				count = 1;
+			}
 	
-			if( firstDirection == 1 && secondDirection == 4 ){
-				fprintf( convertedPath, "%s\n", "TURNLEFT" );
-			}
-			if( firstDirection == 4 && secondDirection == 1 ){
-				fprintf( convertedPath, "%s\n", "TURNRIGHT" );
-			} 
-			if( secondDirection - firstDirection == 1 ){
+			if( secondDirection - firstDirection == 1 || firstDirection == 4 && secondDirection == 1 ){
 				fprintf( convertedPath, "%s\n", "TURNRIGHT" );
 			}
-			if( secondDirection - firstDirection == -1 ){
+			if( secondDirection - firstDirection == -1 || firstDirection == 1 && secondDirection == 4 ){
 				fprintf( convertedPath, "%s\n", "TURNLEFT" );
 			}
 		} else{
@@ -350,6 +349,36 @@ void pathConvert( char *ogPath, maze maze, int size){
 		
 		//printf( "Count: %d\n\n", count );	
 	}
+
+	fprintf( convertedPath, "%s %d\n", "FORWARD", count );
+		firstDirection = secondDirection;
+		if( maze->end_direction == 'S' ){
+			secondDirection = 3;
+		}
+		if( maze->end_direction == 'W' ){
+			secondDirection = 4;
+		}
+		if( maze->end_direction == 'N' ){
+			secondDirection = 1;
+		}
+		if( maze->end_direction == 'E' ){
+			secondDirection = 2;
+		}
+
+		if( firstDirection == 1 && secondDirection == 4 ){
+			fprintf( convertedPath, "%s\n", "TURNLEFT" );
+		}
+		if( firstDirection == 4 && secondDirection == 1 ){
+			fprintf( convertedPath, "%s\n", "TURNRIGHT" );
+		} 
+		if( secondDirection - firstDirection == 1 ){
+			fprintf( convertedPath, "%s\n", "TURNRIGHT" );
+		}
+		if( secondDirection - firstDirection == -1 ){
+			fprintf( convertedPath, "%s\n", "TURNLEFT" );
+		}
+
+		fprintf( convertedPath, "%s\n", "END" );
 	
 	fclose( path );
 	fclose( convertedPath );

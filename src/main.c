@@ -4,12 +4,12 @@
 #include <unistd.h>
 #include "maze.h"
 #include "binary.h"
-#include "BFS.h"
+#include "txt_management.h"
 
 int main(int argc, char **argv) {
-	int c, bflag = 0, fflag = 0;
-	char *bin_file;
-	while ((c = getopt(argc, argv, ":hb:f")) != -1) {
+	int c, bflag = 0, fflag = 0, tflag = 0;
+	char *bin_file, *txt_file;
+	while ((c = getopt(argc, argv, ":hb:ft:")) != -1) {
 		switch (c) {
 			case 'h':
 				print_help();
@@ -20,6 +20,10 @@ int main(int argc, char **argv) {
 				break;
 			case 'f':
 				fflag = 1;
+				break;
+			case 't':
+				tflag = 1;
+				txt_file = optarg;
 				break;
 			case '?':
 				fprintf(stderr, "Nieznana opcja: -%c\n", optopt);
@@ -41,9 +45,13 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "Opcja -b wymaga pliku tekstowego\n");
 		return 5;
 	}
-	if (fflag == 1 && is_binary(argv[optind]) == 0) {
+	if (fflag == 1 && is_binary(argv[optind]) == 0 && bflag == 0) {
 		fprintf(stderr, "Opcja -f wymaga pliku binarnego\n");
 		return 6;
+	}
+	if (tflag == 1 && is_binary(argv[optind]) == 0) {
+		fprintf(stderr, "Opcja -t wymaga pliku binarnego\n");
+		return 7;
 	}
 	maze m = read_file(argv[optind]);
 	if (m == NULL) {
@@ -51,13 +59,26 @@ int main(int argc, char **argv) {
 		return 7;
 	}
 	if (bflag == 1) {
-		printf("%d\n", convert_to_binary(m, argv[optind], bin_file));
-		printf("weszlo\n");
+		if (convert_to_binary(m, argv[optind], bin_file) != 0) {
+			fprintf(stderr, "Nie udalo sie przekonwertowac na plik binarny\n");
+			fflag = 0;
+		}
 	}
-	//print_maze(m);
-	
-	printf( "Wynik: %d", BFS(m) );
-	
+	if (tflag == 1) {
+		if (access(txt_file, F_OK) == 0) {
+			fprintf(stderr, "Plik o nazwie %s istnieje\n", txt_file);
+		}
+		else {
+			FILE* f = fopen(txt_file, "w");
+			if (f == NULL) {
+				fprintf(stderr, "Nie udalo sie stworzyc pliku tekstowego\n");
+			}
+			else {
+				fprint_maze(f, m);
+				fclose(f);
+			}
+		}
+	}
 	free_maze(m);
 	return 0;
 }
