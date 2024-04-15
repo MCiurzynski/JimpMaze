@@ -6,7 +6,7 @@
 #include "bin_management.h"
 #include "txt_management.h"
 #include "find_path.h"
-#include "BFS.h"
+#include "bfs.h"
 
 int main(int argc, char **argv) {
 	int c, bflag = 0, fflag = 0, tflag = 0, pflag = 0;

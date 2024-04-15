@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "maze.h"
 #include "txt_management.h"
-#include "BFS.h"
+#include "bfs.h"
 #include "find_path.h"
 
 FILE * charFileInit( int size, char* fileName ){

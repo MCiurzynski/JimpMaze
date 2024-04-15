@@ -12,7 +12,7 @@ void parentsAdd( FILE *, int, int );
 
 int intParentsGet( FILE *, int );
 
-int BFS( maze, char* bin_file );
+int bfs( maze, char* bin_file );
 
 int pathLength( FILE *, int, int );
 
