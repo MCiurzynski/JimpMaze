@@ -4,8 +4,21 @@
 #include <stdint.h>
 #include "maze.h"
 #include "find_path.h"
+#include "bfs_for_big.h"
 
 int find_path(maze m) {
+    if (m->col*m->row < 850 * 850) {
+        return find_path_small(m);
+    } else {
+        return bfs_for_big(m, 0, NULL);
+    }
+}
+
+int find_path_to_big_bin(maze m, char* bin_file) {
+    return bfs_for_big(m, 1, bin_file);
+}
+
+int find_path_small(maze m) {
     uint16_t* parents = bfs_smaller_maze(m);
     if (parents == NULL) {
         fprintf(stderr, "Nie udalo sie znalezc sciezki\n");

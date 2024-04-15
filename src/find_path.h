@@ -17,6 +17,10 @@ typedef struct queue_head {
 
 int find_path(maze);
 
+int find_path_to_big_bin(maze, char*);
+
+int find_path_small(maze m);
+
 int find_path_to_bin(maze, char*);
 
 void path_step_to_bin(int, int, FILE*);

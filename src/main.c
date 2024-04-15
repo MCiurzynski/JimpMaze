@@ -6,7 +6,7 @@
 #include "bin_management.h"
 #include "txt_management.h"
 #include "find_path.h"
-#include "bfs.h"
+#include "bfs_for_big.h"
 
 int main(int argc, char **argv) {
 	int c, bflag = 0, fflag = 0, tflag = 0, pflag = 0;
@@ -103,15 +103,14 @@ int main(int argc, char **argv) {
 	if (find_path(m) != 0) {
 		fprintf(stderr, "Nie udalo sie znalezc siezki\n");
 		free_maze(m);
-		return 112;
+		return 11;
 	}
 	if (fflag == 1) {
-		bfs(m, bin_file);
-		//find_path_to_bin(m, bin_file);
+		if (m->col*m->row < 850 * 850)
+			find_path_to_bin(m, bin_file);
+		else
+			find_path_to_big_bin(m, bin_file);
 	}
-
-	//bfs(m, bin_file);
-
 	free_maze(m);
 	return 0;
 }

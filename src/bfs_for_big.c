@@ -2,10 +2,13 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <unistd.h>
 #include "maze.h"
 #include "txt_management.h"
-#include "bfs.h"
+#include "bfs_for_big.h"
 #include "find_path.h"
+
+char path_file[100] = "path.tmp";
 
 FILE * charFileInit( int size, char* fileName ){
 
@@ -57,9 +60,9 @@ int intParentsGet( FILE *parents, int child ){
 	return charsToInt( parentToChars );
 }
 
-int bfs( maze maze, char* bin_file ){
-	
-	uint16_t *isVisited = calloc( maze->row * maze->col, sizeof(uint16_t) );
+int bfs_for_big( maze maze, int bflag, char* bin_file){
+	char parents_file[100] = "parents.tmp";
+	uint16_t *isVisited = calloc( maze->row * maze->col/16 + 1, sizeof(uint16_t) );
 	if (isVisited == NULL) {
 		fprintf(stderr, "Nie udalo sie zaalokowac pamieci na tablice odwiedzonych!\n");
 		return -1;
@@ -68,14 +71,22 @@ int bfs( maze maze, char* bin_file ){
 	int begin = maze->col * maze->start_y + maze->start_x;
 	int end = maze->col * maze->end_y + maze->end_x;
 
-	//queue_tt queue = queueInit( maze->row * maze->col ); //---------------------------PODMIANKA---------------------------//
 	queue_head queue = init_queue();
 
-	//queueAdd( queue, begin ); //---------------------------PODMIANKA---------------------------//
 	add_to_queue( begin, queue );
-
-	FILE *parents = charFileInit( maze->row * maze->col, "parents.txt" );
-
+	for (int i = 0; i < 1000000; i++) {
+		if (access(parents_file, F_OK) == 0) {
+			sprintf(parents_file, "parents%d.tmp", i);
+		}
+		else
+			break;
+	}
+	if (access(path_file, F_OK) == 0) {
+		return -1;
+	}
+	FILE *parents = charFileInit( maze->row * maze->col, parents_file );
+	if (parents == NULL)
+		return -1;
 	int n = 0;
 
 	while( true )
@@ -96,7 +107,6 @@ int bfs( maze maze, char* bin_file ){
 		if( is_wall( nX, nY, nX-1, nY, maze ) == 0 ){
 			int nTemp = (nY) * maze->col + nX-1;
 			if( !get_bit( nTemp, isVisited ) ){
-				//queueAdd( queue, nTemp ); //---------------------------PODMIANKA---------------------------//
 				add_to_queue( nTemp, queue );
 				parentsAdd( parents, n, nTemp );
 			}
@@ -104,7 +114,6 @@ int bfs( maze maze, char* bin_file ){
 		if( is_wall( nX, nY, nX+1, nY, maze ) == 0 ){
                         int nTemp = (nY) * maze->col + nX+1;
                         if( !get_bit( nTemp, isVisited ) ){
-                               // queueAdd( queue, nTemp ); //---------------------------PODMIANKA---------------------------//
 							   add_to_queue( nTemp, queue );
 				parentsAdd( parents, n, nTemp );
                         }
@@ -112,7 +121,6 @@ int bfs( maze maze, char* bin_file ){
 		if( is_wall( nX, nY, nX, nY-1, maze ) == 0 ){
                         int nTemp = (nY-1) * maze->col + nX;
                         if( !get_bit( nTemp, isVisited ) ){
-                                //queueAdd( queue, nTemp ); //---------------------------PODMIANKA---------------------------//
 								add_to_queue( nTemp, queue );
 				parentsAdd( parents, n, nTemp );
                         }       
@@ -120,7 +128,6 @@ int bfs( maze maze, char* bin_file ){
 		if( is_wall( nX, nY, nX, nY+1, maze ) == 0 ){
                         int nTemp = (nY+1) * maze->col + nX;
                         if( !get_bit( nTemp, isVisited ) ){
-                                //queueAdd( queue, nTemp ); //---------------------------PODMIANKA---------------------------//
 								add_to_queue( nTemp, queue );
 				parentsAdd( parents, n, nTemp );
                         }       
@@ -133,12 +140,15 @@ int bfs( maze maze, char* bin_file ){
 	
 	int length = pathLength( parents, begin, end );
 	char *path = pathToFile( parents, begin, end, length );
-	pathConvert( path, maze, length );
-	pathConvertToBin( path, maze, length, bin_file );
-	
+	if (bflag == 1)
+		pathConvertToBin(path, maze, length, bin_file);
+	else
+		pathConvert( path, maze, length );
+	remove(parents_file);
+	remove(path_file);
 	fclose( parents );
 
-	return n;
+	return 0;
 }
 
 int pathLength( FILE *parents, int begin, int end ){
@@ -159,7 +169,22 @@ int pathLength( FILE *parents, int begin, int end ){
 char *pathToFile( FILE *parents, int begin, int end, int length ){
 	
 	int parent = end;
-	FILE *path = charFileInit( length + 1, "path.txt" );
+	sprintf(path_file, "path.tmp");
+	if (path_file == NULL)
+		return NULL;
+	for (int i = 0; i < 1000000; i++) {
+		if (access(path_file, F_OK) == 0) {
+			sprintf(path_file, "path%d.tmp", i);
+		}
+		else
+			break;
+	}
+	if (access(path_file, F_OK) == 0) {
+		return NULL;
+	}
+	FILE *path = charFileInit( length + 1, path_file );
+	if (path == NULL)
+		return NULL;
 	int i = 0;
 	
 	while( true ){
@@ -181,7 +206,7 @@ char *pathToFile( FILE *parents, int begin, int end, int length ){
 	
 	fclose( path );
 	
-	return "path.txt";
+	return path_file;
 }
 
 void pathConvert( char *ogPath, maze maze, int size ){
