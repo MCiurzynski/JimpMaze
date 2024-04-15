@@ -57,7 +57,7 @@ int intParentsGet( FILE *parents, int child ){
 	return charsToInt( parentToChars );
 }
 
-int BFS( maze maze ){
+int BFS( maze maze, char* bin_file ){
 	
 	uint16_t *isVisited = calloc( maze->row * maze->col, sizeof(uint16_t) );
 	if (isVisited == NULL) {
@@ -134,6 +134,7 @@ int BFS( maze maze ){
 	int length = pathLength( parents, begin, end );
 	char *path = pathToFile( parents, begin, end, length );
 	pathConvert( path, maze, length );
+	pathConvertToBin( path, maze, length, bin_file );
 	
 	fclose( parents );
 
@@ -183,7 +184,7 @@ char *pathToFile( FILE *parents, int begin, int end, int length ){
 	return "path.txt";
 }
 
-void pathConvert( char *ogPath, maze maze, int size){
+void pathConvert( char *ogPath, maze maze, int size ){
 	
 	unsigned char charArray[3];
 	FILE *path = fopen( ogPath, "r" );
@@ -270,20 +271,150 @@ void pathConvert( char *ogPath, maze maze, int size){
 			secondDirection = 2;
 		}
 
-		if( firstDirection == 1 && secondDirection == 4 ){
-			printf( "%s\n", "TURNLEFT" );
+		if( secondDirection - firstDirection == 1 || firstDirection == 4 && secondDirection == 1 ){
+				printf( "%s\n", "TURNRIGHT" );
 		}
-		if( firstDirection == 4 && secondDirection == 1 ){
-			printf( "%s\n", "TURNRIGHT" );
-		} 
-		if( secondDirection - firstDirection == 1 ){
-			printf( "%s\n", "TURNRIGHT" );
-		}
-		if( secondDirection - firstDirection == -1 ){
-			printf( "%s\n", "TURNLEFT" );
+		if( secondDirection - firstDirection == -1 || firstDirection == 1 && secondDirection == 4 ){
+				printf( "%s\n", "TURNLEFT" );
 		}
 
 		printf( "%s\n", "END" );
 	
 	fclose( path );
+}
+
+int pathConvertToBin( char *ogPath, maze maze, int size, char* bin_file ) {
+
+    FILE* f = fopen(bin_file, "rb+");
+    uint32_t offset_to_solution, is_offset;
+    uint32_t steps;
+    int steps_offset;
+    //int next, node, len, direction;
+    if (f == NULL) {
+        fprintf(stderr, "Nie udalo sie otworzyc pliku binarnego do zapisu sciezki\n");
+        return -1;
+    }
+    fseek(f, 0, SEEK_END);
+    offset_to_solution = ftell(f) - 4;
+    fseek(f, 33, SEEK_SET);
+    fread(&is_offset, sizeof is_offset, 1, f);
+    if (is_offset != 0) {
+        fprintf(stderr, "W pliku binarnym jest juz zapisana sciezka\n");
+        return -2;
+    }
+    fseek(f, 33, SEEK_SET);
+    fwrite(&offset_to_solution, sizeof offset_to_solution, 1, f);
+    fseek(f, 0, SEEK_END);
+    steps_offset = ftell(f);
+    steps = 0;
+    fwrite(&steps, sizeof steps, 1, f);
+
+    unsigned char charArray[3];
+	FILE *path = fopen( ogPath, "r" );
+	
+	fseek( path, 0, SEEK_SET );
+	fscanf( path, "%c%c%c", &charArray[0], &charArray[1], &charArray[2] );
+	int second = charsToInt( charArray );
+	int first = 0;
+	
+	int firstDirection = 0;
+	int secondDirection = 0;
+	if( maze->start_direction == 'S' ){
+		secondDirection = 1;
+	}
+	if( maze->start_direction == 'W' ){
+		secondDirection = 2;
+	}
+	if( maze->start_direction == 'N' ){
+		secondDirection = 3;
+	}
+	if( maze->start_direction == 'E' ){
+		secondDirection = 4;
+	}
+	int count = 0;
+	
+	for(int i = 1; i <= size; i++){
+	
+		first = second;
+		fseek( path, 3 * i, SEEK_SET );
+		fscanf( path, "%c%c%c", &charArray[0], &charArray[1], &charArray[2] );
+		second = charsToInt( charArray );
+		
+		firstDirection = secondDirection;
+		secondDirection = second - first;
+		
+		if( secondDirection == 1 ){
+			secondDirection = 2;
+		}
+		if( secondDirection == -1 ){
+			secondDirection = 4;
+		}
+		if( secondDirection ==  maze->col ){
+			secondDirection = 3;
+		}
+		if( secondDirection == -1 * maze->col ){
+			secondDirection = 1;
+		}	
+		
+		if( firstDirection != secondDirection ){
+			
+			if( count == 0){
+				continue;
+			} 
+			steps++;
+
+			uint8_t countBin = count - 1;
+			uint8_t direction;
+
+			if( firstDirection == 1 ){
+				direction = 'N';
+			}
+			if( firstDirection == 2 ){
+				direction = 'E';
+			}
+			if( firstDirection == 3 ){
+				direction = 'S';
+			}
+			if( firstDirection == 4 ){
+				direction = 'W';
+			}
+
+			fwrite( &direction, 1, 1, f );
+			fwrite( &countBin, 1, 1, f );
+
+			count = 1;
+
+		} else{
+
+			count++;
+		}
+	}
+
+	firstDirection = secondDirection;
+
+	uint8_t countBin = count - 1;
+	uint8_t direction;
+
+	if( firstDirection == 1 ){
+		direction = 'N';
+	}
+	if( firstDirection == 2 ){
+		direction = 'E';
+	}
+	if( firstDirection == 3 ){
+		direction = 'S';
+	}
+	if( firstDirection == 4 ){
+		direction = 'W';
+	}
+
+	fwrite( &direction, 1, 1, f );
+	fwrite( &countBin, 1, 1, f );
+
+	fseek(f, steps_offset, SEEK_SET);
+    steps;
+    fwrite(&steps, sizeof steps, 1, f);
+    fclose(f);
+
+	return 0;
 }
