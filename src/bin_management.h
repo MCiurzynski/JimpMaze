@@ -1,5 +1,5 @@
-#ifndef BINARY_H
-#define BINARY_H
+#ifndef BIN_MANAGEMENT_H
+#define BIN_MANAGEMENT_H
 
 #pragma pack(push, 1)
 typedef struct bin_buff {

@@ -237,7 +237,6 @@ int find_path_to_bin(maze m, char* bin_file) {
     if (len != 0)
         path_step_to_bin(len, direction, f);
     fseek(f, steps_offset, SEEK_SET);
-    steps--;
     fwrite(&steps, sizeof steps, 1, f);
     fclose(f);
     return 0;

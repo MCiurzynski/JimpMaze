@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "maze.h"
-#include "binary.h"
+#include "bin_management.h"
 
 int convert_to_binary(maze m, char* source, char* bin) {//Funkcja in progress
 	int i, j, n;

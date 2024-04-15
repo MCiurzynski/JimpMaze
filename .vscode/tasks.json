@@ -11,7 +11,7 @@
 				"main.c",
 				"maze.c",
 				"txt_management.c",
-				"binary.c",
+				"bin_management.c",
 				"find_path.c",
 				"-o",
 				"${fileDirname}/../bin/main.out"
