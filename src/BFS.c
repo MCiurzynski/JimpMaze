@@ -187,7 +187,6 @@ void pathConvert( char *ogPath, maze maze, int size){
 	
 	unsigned char charArray[3];
 	FILE *path = fopen( ogPath, "r" );
-	FILE *convertedPath = fopen( "convertedPath.txt", "w+" );
 	
 	fseek( path, 0, SEEK_SET );
 	fscanf( path, "%c%c%c", &charArray[0], &charArray[1], &charArray[2] );
@@ -210,7 +209,7 @@ void pathConvert( char *ogPath, maze maze, int size){
 	}
 	int count = 0;
 
-	fprintf( convertedPath, "%s\n", "START");
+	printf( "%s\n", "START" );
 	
 	for(int i = 1; i <= size; i++){
 	
@@ -238,15 +237,15 @@ void pathConvert( char *ogPath, maze maze, int size){
 		if( firstDirection != secondDirection ){
 			
 			if( count != 0){
-				fprintf( convertedPath, "%s %d\n", "FORWARD", count );
+				printf( "%s %d\n", "FORWARD", count );
 				count = 1;
 			} 
-			
+
 			if( secondDirection - firstDirection == 1 || firstDirection == 4 && secondDirection == 1 ){
-				fprintf( convertedPath, "%s\n", "TURNRIGHT" );
+				printf( "%s\n", "TURNRIGHT" );
 			}
 			if( secondDirection - firstDirection == -1 || firstDirection == 1 && secondDirection == 4 ){
-				fprintf( convertedPath, "%s\n", "TURNLEFT" );
+				printf( "%s\n", "TURNLEFT" );
 			}
 		} else{
 
@@ -254,7 +253,7 @@ void pathConvert( char *ogPath, maze maze, int size){
 		}
 	}
 
-	fprintf( convertedPath, "%s %d\n", "FORWARD", count );
+	printf( "%s %d\n", "FORWARD", count );
 
 		firstDirection = secondDirection;
 
@@ -272,20 +271,19 @@ void pathConvert( char *ogPath, maze maze, int size){
 		}
 
 		if( firstDirection == 1 && secondDirection == 4 ){
-			fprintf( convertedPath, "%s\n", "TURNLEFT" );
+			printf( "%s\n", "TURNLEFT" );
 		}
 		if( firstDirection == 4 && secondDirection == 1 ){
-			fprintf( convertedPath, "%s\n", "TURNRIGHT" );
+			printf( "%s\n", "TURNRIGHT" );
 		} 
 		if( secondDirection - firstDirection == 1 ){
-			fprintf( convertedPath, "%s\n", "TURNRIGHT" );
+			printf( "%s\n", "TURNRIGHT" );
 		}
 		if( secondDirection - firstDirection == -1 ){
-			fprintf( convertedPath, "%s\n", "TURNLEFT" );
+			printf( "%s\n", "TURNLEFT" );
 		}
 
-		fprintf( convertedPath, "%s\n", "END" );
+		printf( "%s\n", "END" );
 	
 	fclose( path );
-	fclose( convertedPath );
 }
