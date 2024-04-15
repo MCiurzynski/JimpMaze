@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${fileDirname}/../bin/main.out",
             "args": [
-                "${fileDirname}/../dane/maze-512x512.txt"
+                "${fileDirname}/../dane/maze1024x1024.txt"
             ],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
