@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include "maze.h"
 #include "txt_management.h"
-#include "binary.h"
+#include "bin_management.h"
 
 void print_help() {
 	printf("Uzycie: ./main.out [FILE] [OPTIONS]\n");

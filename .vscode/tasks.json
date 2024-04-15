@@ -11,10 +11,7 @@
 				"main.c",
 				"maze.c",
 				"txt_management.c",
-				"binary.c",
-<<<<<<< HEAD
-				"BFS.c",
-=======
+				"bin_management.c",
 				"find_path.c",
 >>>>>>> origin/mateusz
 				"-o",

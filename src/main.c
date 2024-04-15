@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "maze.h"
-#include "binary.h"
+#include "bin_management.h"
 #include "txt_management.h"
 #include "find_path.h"
 #include "BFS.h"
