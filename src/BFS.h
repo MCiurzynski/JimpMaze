@@ -2,20 +2,6 @@
 #ifndef BFS_H
 #define BFS_H
 
-typedef struct {
-	int *queue;
-	int front;
-	int back;
-	int length;
-	bool isEmpty;
-} *queue_tt; 
-
-queue_tt queueInit( int );
-
-bool queueAdd( queue_tt, int );
-
-int queuePop( queue_tt );
-
 FILE * charFileInit( int, char* );
 
 unsigned char* intToChars( int );

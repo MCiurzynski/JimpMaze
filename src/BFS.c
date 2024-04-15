@@ -7,71 +7,6 @@
 #include "BFS.h"
 #include "find_path.h"
 
-queue_tt queueInit( int size ){
-
-	queue_tt queue = malloc( sizeof( *queue ) );
-	if( queue->queue == NULL ){
-
-                fprintf( stderr, "Nie udalo sie zaalokowac pamieci na kolejke!" );
-                return NULL;
-        }
-
-	queue->queue = malloc( size * sizeof(int) );
-	if( queue->queue == NULL ){
-
-		fprintf( stderr, "Nie udalo sie zaalokowac pamieci na tablice kolejki!" );
-		return NULL;
-	}
-
-	queue->front = 0;
-	queue->back = 0;
-	queue->length = size;
-	queue->isEmpty = true;
-
-	return queue;
-}
-
-bool queueAdd(queue_tt queue, int node) {
-
-	if( queue->isEmpty ){
-
-		queue->queue[queue->back] = node;
-		queue->isEmpty = false;
-		return true;
-	} else{
-
-	    	if ((queue->back + 1) % queue->length == queue->front) {
-			fprintf(stderr, "Kolejce zabraklo miejsca!\n");
-			return false;
-	    	}
-
-		queue->back = (queue->back + 1) % ( queue->length );
-		queue->queue[queue->back] = node;	
-		return true;
-	}
-}
-
-int queuePop(queue_tt queue) {
-
-    	if (queue->front == queue->back) {
-
-			if( queue->isEmpty ){
-
-				fprintf(stderr, "Kolejka jest pusta!\n");
-				return -1;
-			} else{
-
-				int popped = queue->queue[queue->front];
-				queue->isEmpty = true;
-				return popped;
-			}
-    	}
-
-	int popped = queue->queue[queue->front];
-	queue->front = (queue->front + 1) % queue->length;
-	return popped;
-}
-
 FILE * charFileInit( int size, char* fileName ){
 
 	FILE *file = fopen( fileName, "w+" );
@@ -90,6 +25,7 @@ FILE * charFileInit( int size, char* fileName ){
 }
 
 unsigned char* intToChars(int number) {
+
 	unsigned static char charArray[3];
 	charArray[0] = (number >> 16) & 0xFF;
 	charArray[1] = (number >> 8) & 0xFF;
@@ -98,6 +34,7 @@ unsigned char* intToChars(int number) {
 }
 
 int charsToInt(unsigned char *charArray) {
+
 	int number = 0;
 	number |= (charArray[0] & 0xFF) << 16;
 	number |= (charArray[1] & 0xFF) << 8;
@@ -106,12 +43,14 @@ int charsToInt(unsigned char *charArray) {
 }
 
 void parentsAdd( FILE *parents, int parent, int child ){
+
 	fseek( parents, 3 * child, SEEK_SET );
 	unsigned char *parentToChars = intToChars( parent );
 	fprintf( parents, "%c%c%c", parentToChars[0], parentToChars[1], parentToChars[2] );
 }
 
 int intParentsGet( FILE *parents, int child ){
+
 	fseek( parents, 3 * child, SEEK_SET );
 	unsigned char parentToChars[3];
 	fscanf( parents, "%c%c%c", &parentToChars[0], &parentToChars[1], &parentToChars[2] );
@@ -144,10 +83,6 @@ int BFS( maze maze ){
 		n = get_from_queue( queue );
 		
 		if( n == end ){
-			break;
-		}
-		
-		if( n == -1 ){
 			break;
 		}
 		
@@ -274,6 +209,8 @@ void pathConvert( char *ogPath, maze maze, int size){
 		secondDirection = 4;
 	}
 	int count = 0;
+
+	fprintf( convertedPath, "%s\n", "START");
 	
 	for(int i = 1; i <= size; i++){
 	
@@ -303,11 +240,8 @@ void pathConvert( char *ogPath, maze maze, int size){
 			if( count != 0){
 				fprintf( convertedPath, "%s %d\n", "FORWARD", count );
 				count = 1;
-			} else{
-				fprintf( convertedPath, "%s\n", "START");
-				count = 1;
-			}
-
+			} 
+			
 			if( secondDirection - firstDirection == 1 || firstDirection == 4 && secondDirection == 1 ){
 				fprintf( convertedPath, "%s\n", "TURNRIGHT" );
 			}
@@ -355,17 +289,3 @@ void pathConvert( char *ogPath, maze maze, int size){
 	fclose( path );
 	fclose( convertedPath );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
