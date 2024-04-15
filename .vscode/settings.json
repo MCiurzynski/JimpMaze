@@ -3,6 +3,7 @@
     "files.associations": {
         "binary.h": "c",
         "stdio.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "find_path.h": "c"
     }
 }
