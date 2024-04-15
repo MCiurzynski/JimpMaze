@@ -266,8 +266,6 @@ void path_step_to_bin(int len, int direction, FILE* f) {
 uint16_t* bfs_smaller_maze(maze m) {
     uint16_t start_x = m->end_x;
     uint16_t start_y = m->end_y;
-    uint16_t end_x = m->start_x;
-    uint16_t end_y = m->start_y;
     int mv_x[4] = {0, 1, 0, -1};
     int mv_y[4] = {1, 0, -1, 0};
     uint32_t n = 0, a, i;
