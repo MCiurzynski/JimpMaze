@@ -5,6 +5,10 @@
 #include "maze.h"
 #include "binary.h"
 #include "txt_management.h"
+<<<<<<< HEAD
+=======
+#include "find_path.h"
+>>>>>>> origin/mateusz
 
 int main(int argc, char **argv) {
 	int c, bflag = 0, fflag = 0, tflag = 0;
@@ -63,6 +67,7 @@ int main(int argc, char **argv) {
 			fprintf(stderr, "Nie udalo sie przekonwertowac na plik binarny\n");
 			fflag = 0;
 		}
+<<<<<<< HEAD
 	}
 	if (tflag == 1) {
 		if (access(txt_file, F_OK) == 0) {
@@ -79,6 +84,25 @@ int main(int argc, char **argv) {
 			}
 		}
 	}
+=======
+	}
+	if (tflag == 1) {
+		if (access(txt_file, F_OK) == 0) {
+			fprintf(stderr, "Plik o nazwie %s istnieje\n", txt_file);
+		}
+		else {
+			FILE* f = fopen(txt_file, "w");
+			if (f == NULL) {
+				fprintf(stderr, "Nie udalo sie stworzyc pliku tekstowego\n");
+			}
+			else {
+				fprint_maze(f, m);
+				fclose(f);
+			}
+		}
+	}
+	printf("%d\n", bfs(m->start_x, m->start_y, m->end_x, m->end_y, m));
+>>>>>>> origin/mateusz
 	free_maze(m);
 	return 0;
 }

@@ -6,6 +6,10 @@
 #include "binary.h"
 
 int convert_to_binary(maze m, char* source, char* bin) {//Funkcja in progress
+	int i, j, n;
+	char c, symbol;
+	uint32_t counter;
+	header h;
 	if (access(bin, F_OK) == 0) {
 		fprintf(stderr, "Plik o nazwie \"%s\" istnieje\n", bin);
 		return 1;
@@ -20,12 +24,77 @@ int convert_to_binary(maze m, char* source, char* bin) {//Funkcja in progress
 		fclose(b);
 		return 3;
 	}
-	header h;
 	h.name = 0x52524243;
 	h.esc = 0x1b;
 	h.col = m->col * 2 + 1;
 	h.row = m->row * 2 + 1;
+	for (i = 1; i <= m->row * 2 + 1; i++) {
+		for (j = 1; j <= m->col * 2 + 1; j++) {
+			c = fgetc(s);
+			if (c == 'P') {
+				h.start_x = j;
+				h.start_y = i;
+			}
+			if (c == 'K') {
+				h.end_x = j;
+				h.end_y = i;
+			}
+		}
+		fgetc(s);
+	}
+	fseek(s, 0, SEEK_SET);
+	h.reserved[0] = 0xFF;
+	h.reserved[1] = 0xFF;
+	h.reserved[2] = 0xFF;
+	h.counter = 0;
+	h.solution = 0;
+	h.sep = '#';
+	h.wall = 'X';
+	h.path = ' ';
 	fwrite(&h, sizeof h, 1, b);
+	counter = 0;
+	n = -1;
+	symbol = 0;
+	for (i = 0; i < m->row * 2 + 1; i++) {
+		for (j = 0; j < m->col * 2 + 1; j++) {
+			c = fgetc(s);
+			if (symbol == c || (symbol == ' ' && (c == 'P' || c == 'K'))) {
+				n++;
+				if (n == 255) {
+					fwrite(&h.sep, 1, 1, b);
+					fwrite(&symbol, 1, 1, b);
+					fwrite(&n, 1, 1, b);
+					counter++;
+					n = -1;
+					symbol = 0;
+				}
+			}
+			else {
+				if (symbol != 0) { 
+					fwrite(&h.sep, 1, 1, b);
+					fwrite(&symbol, 1, 1, b);
+					fwrite(&n, 1, 1, b);
+					counter++;
+				}
+				n = 0;
+				if (c == 'P' || c == 'K')
+					c = ' ';
+				symbol = c;
+			}
+		}
+		if (symbol != 0) {
+			fwrite(&h.sep, 1, 1, b);
+			fwrite(&symbol, 1, 1, b);
+			fwrite(&n, 1, 1, b);
+			counter++;
+			n = -1;
+			symbol = 0;
+		}
+		fgetc(s);
+	}
+	fwrite(&h.name, sizeof h.name, 1, b);
+	fseek(b, 29, SEEK_SET);
+	fwrite(&counter, sizeof counter, 1, b);
 	fclose(b);
 	fclose(s);
 	return 0;

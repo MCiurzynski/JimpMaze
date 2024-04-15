@@ -12,7 +12,11 @@
 				"maze.c",
 				"txt_management.c",
 				"binary.c",
+<<<<<<< HEAD
 				"BFS.c",
+=======
+				"find_path.c",
+>>>>>>> origin/mateusz
 				"-o",
 				"${fileDirname}/../bin/main.out"
 			],

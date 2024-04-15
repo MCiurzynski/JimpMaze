@@ -31,6 +31,4 @@ int is_wall(uint16_t, uint16_t, uint16_t, uint16_t, maze);
 
 void free_maze(maze);
 
-void print_maze(maze);
-
 #endif
