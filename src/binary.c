@@ -243,3 +243,106 @@ maze read_bin_maze(FILE *f) { //Funkcja wczytująca dane z pliku binarnego
 	}
 	return m;
 }
+
+int read_path_from_bin(char *bin_file) {
+	uint32_t offset, steps;
+	uint8_t direction, len, tmp_direction;
+	int i;
+	FILE *f = fopen(bin_file, "rb");
+	if (f == NULL) {
+		fprintf(stderr, "Nie udalo sie otworzyc pliku binarnego\n");
+		return -1;
+	}
+	if (is_bin_file_correct(f) == 0) {
+		fprintf(stderr, "Wprowadzony plik binarny jest niepoprawny\n");
+		fclose(f);
+		return -2;
+	}
+	maze m = read_file(bin_file);
+	if (m == NULL) {
+		fprintf(stderr, "Nie udalo sie otworzyc labiryntu\n");
+		fclose(f);
+		return -3;
+	}
+	fseek(f, 33, SEEK_SET);
+	fread(&offset, sizeof offset, 1, f);
+	fseek(f, offset + 4, SEEK_SET);
+	fread(&steps, sizeof steps, 1, f);
+	fread(&direction, sizeof direction, 1, f);
+	printf("START\n");
+	fread(&len, sizeof len, 1, f);
+	tmp_direction = direction;
+	if (direction_to_int(tmp_direction) - direction_to_int(m->start_direction) == 1 || direction_to_int(tmp_direction) - direction_to_int(m->start_direction) == -3)
+		printf("TURNLEFT\n");
+	if (direction_to_int(tmp_direction) - direction_to_int(m->start_direction) == -1 || direction_to_int(tmp_direction) - direction_to_int(m->start_direction) == 3)
+		printf("TURNRIGHT\n");
+	printf("FORWARD %d\n", len + 1);
+	for (i = 0; i < steps + 1; i++) {
+		fread(&direction, sizeof len, 1, f);
+		fread(&len, sizeof len, 1, f);
+		print_direction(tmp_direction, direction);
+		printf("FORWARD %d\n", len + 1);
+		tmp_direction = direction;
+	}
+	if (direction_to_int(tmp_direction) - direction_to_int(m->end_direction) == 1 || direction_to_int(tmp_direction) - direction_to_int(m->end_direction) == -3)
+		printf("TURNLEFT\n");
+	if (direction_to_int(tmp_direction) - direction_to_int(m->end_direction) == -1 || direction_to_int(tmp_direction) - direction_to_int(m->end_direction) == 3)
+		printf("TURNRIGHT\n");
+	printf("STOP\n");
+	free_maze(m);
+	return 0;
+}
+
+void print_direction(uint8_t x, uint8_t y) {
+	int a, b;
+	switch (x)
+	{
+	case 'N':
+		a = 0;
+		break;
+	case 'E':
+		a = 1;
+		break;
+	case 'S':
+		a = 2;
+		break;
+	case 'W':
+		a = 3;
+		break;
+	}
+	switch (y)
+	{
+	case 'N':
+		b = 0;
+		break;
+	case 'E':
+		b = 1;
+		break;
+	case 'S':
+		b = 2;
+		break;
+	case 'W':
+		b = 3;
+		break;
+	}
+	if (a - b == 1 || a - b == -3)
+		printf("TURNLEFT\n");
+	if (a - b == -1 || a - b == 3)
+		printf("TURNRIGHT\n");
+}
+
+int direction_to_int(uint16_t x) {
+	switch (x)
+	{
+	case 'N':
+		return 0;
+	case 'E':
+		return 1;
+	case 'S':
+		return 2;
+	case 'W':
+		return 3;
+	default:
+		return -1;;
+	}
+}

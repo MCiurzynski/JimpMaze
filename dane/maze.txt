@@ -1,13 +1,13 @@
 XXXXXXXXXXX
-X         X
+P         X
 X X XXXXX X
 X X X   X X
 X X X XXX X
 X X X X   X
 XXX X X XXX
-X   X X   K
+X   X X   X
 X X X XXX X
 X X X X   X
 X XXX X XXX
-X     X   P
-XXXXXXXXXXX
+X     X   X
+XXXXXXXXXKX

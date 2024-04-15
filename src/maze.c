@@ -18,6 +18,7 @@ void print_help() {
 	printf(" -f\tumozliwia zapis znalezionej sciezki do pliku binarnego. Mozna podac w przypadku pliku binarnego lub po podaniu opcji -b dla pliku tekstowego\n");
 	printf(" -b\tumozliwia zapis labiryntu w postaci pliku binarnego w lokalizacji podanej po parametrze. Dziala jedynie w przypadku pliku tekstowego.\n");
 	printf(" -t\tumożliwia zapis labiryntu w postaci tekstowej w lokalizacji podanej po parametrze. Dziala jednynie w przypadku pliku binarnego\n");
+	printf(" -p\tumożliwia odczyt ścieżki zapisanej w podanym labiryncie binarnym, ignoruje inne opcje\n");
 }
 
 maze read_file(char* name) { // Główna funkcja wczytująca pliki

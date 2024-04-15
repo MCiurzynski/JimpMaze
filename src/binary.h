@@ -35,4 +35,10 @@ char get_char(buff);
 
 maze read_bin_maze(FILE *);
 
+int read_path_from_bin(char*);
+
+void print_direction(uint8_t, uint8_t);
+
+int direction_to_int(uint16_t);
+
 #endif
