@@ -8,17 +8,15 @@ typedef struct {
 	int back;
 	int length;
 	bool isEmpty;
-} *queue_t;
+} *queue_tt; 
 
-queue_t queueInit( int );
+queue_tt queueInit( int );
 
-bool queueAdd( queue_t, int );
+bool queueAdd( queue_tt, int );
 
-int queuePop( queue_t );
+int queuePop( queue_tt );
 
 FILE * charFileInit( int, char* );
-
-//FILE * parentsInit( int );
 
 unsigned char* intToChars( int );
 
@@ -34,9 +32,6 @@ int pathLength( FILE *, int, int );
 
 char *pathToFile( FILE *, int, int, int );
 
-void fileTest( FILE *, int );
-
 void pathConvert( char *, maze, int );
-
 
 #endif

@@ -5,17 +5,20 @@
 #include "maze.h"
 #include "txt_management.h"
 #include "BFS.h"
+#include "find_path.h"
 
-queue_t queueInit( int size ){
+queue_tt queueInit( int size ){
 
-	queue_t queue = malloc( sizeof( *queue ) );
+	queue_tt queue = malloc( sizeof( *queue ) );
 	if( queue->queue == NULL ){
+
                 fprintf( stderr, "Nie udalo sie zaalokowac pamieci na kolejke!" );
                 return NULL;
         }
 
 	queue->queue = malloc( size * sizeof(int) );
 	if( queue->queue == NULL ){
+
 		fprintf( stderr, "Nie udalo sie zaalokowac pamieci na tablice kolejki!" );
 		return NULL;
 	}
@@ -26,45 +29,42 @@ queue_t queueInit( int size ){
 	queue->isEmpty = true;
 
 	return queue;
-
 }
 
-bool queueAdd(queue_t queue, int node) {
+bool queueAdd(queue_tt queue, int node) {
 
 	if( queue->isEmpty ){
+
 		queue->queue[queue->back] = node;
 		queue->isEmpty = false;
-		//printf("Back1 = %d\n", queue->back);
-		//printf("Back2 = %d\n", queue->back);
 		return true;
-		
 	} else{
+
 	    	if ((queue->back + 1) % queue->length == queue->front) {
 			fprintf(stderr, "Kolejce zabraklo miejsca!\n");
 			return false;
 	    	}
-	    	
-		//printf("Back1 = %d\n", queue->back);
+
 		queue->back = (queue->back + 1) % ( queue->length );
 		queue->queue[queue->back] = node;	
-		//printf("Back2 = %d\n", queue->back);
 		return true;
 	}
 }
 
-int queuePop(queue_t queue) {
+int queuePop(queue_tt queue) {
 
     	if (queue->front == queue->back) {
-		if( queue->isEmpty ){
-			fprintf(stderr, "Kolejka jest pusta!\n");
-			return -1;
-			
-		} else{
-			int popped = queue->queue[queue->front];
-			queue->isEmpty = true;
-			return popped;
-			
-		}
+
+			if( queue->isEmpty ){
+
+				fprintf(stderr, "Kolejka jest pusta!\n");
+				return -1;
+			} else{
+
+				int popped = queue->queue[queue->front];
+				queue->isEmpty = true;
+				return popped;
+			}
     	}
 
 	int popped = queue->queue[queue->front];
@@ -75,16 +75,17 @@ int queuePop(queue_t queue) {
 FILE * charFileInit( int size, char* fileName ){
 
 	FILE *file = fopen( fileName, "w+" );
+
 	if( file == NULL ){
+
 		fprintf( stderr, "Nie udalo sie utworzyc pliku \"%s\"!\n", fileName );
                 return NULL;
-                
 	} else{
+
 		for( int i = 0; i < size; i++ ){
 			fprintf( file, "%c%c%c", 255, 255, 255 );
 		}
 		return file;
-		
 	}
 }
 
@@ -108,7 +109,6 @@ void parentsAdd( FILE *parents, int parent, int child ){
 	fseek( parents, 3 * child, SEEK_SET );
 	unsigned char *parentToChars = intToChars( parent );
 	fprintf( parents, "%c%c%c", parentToChars[0], parentToChars[1], parentToChars[2] );
-	//free( parentToChars );
 }
 
 int intParentsGet( FILE *parents, int child ){
@@ -129,21 +129,21 @@ int BFS( maze maze ){
 	int begin = maze->col * maze->start_y + maze->start_x;
 	int end = maze->col * maze->end_y + maze->end_x;
 
-	queue_t queue = queueInit( maze->row * maze->col );
-	queueAdd( queue, begin );
+	//queue_tt queue = queueInit( maze->row * maze->col ); //---------------------------PODMIANKA---------------------------//
+	queue_head queue = init_queue();
 
-	//FILE *parents = parentsInit( maze->row * maze->col );
+	//queueAdd( queue, begin ); //---------------------------PODMIANKA---------------------------//
+	add_to_queue( begin, queue );
+
 	FILE *parents = charFileInit( maze->row * maze->col, "parents.txt" );
 
 	int n = 0;
 
 	while( true )
 	{
-		n = queuePop( queue );
-		//printf("%d\n", n);
+		n = get_from_queue( queue );
 		
 		if( n == end ){
-			//printf("Licze na glitche: %d\n", intParentsGet( parents, n ));
 			break;
 		}
 		
@@ -151,7 +151,6 @@ int BFS( maze maze ){
 			break;
 		}
 		
-		//printf("H\n");
 		if( get_bit( n, isVisited ) ){
 			continue;
 		}
@@ -159,42 +158,43 @@ int BFS( maze maze ){
 		int nY = n / maze->col;
 		int nX = n % maze->col;
 		
-		//printf("%d\n", nX);
-		//printf("%d\n", nY);
-		//rintf("\n");
-		
 		if( is_wall( nX, nY, nX-1, nY, maze ) == 0 ){
 			int nTemp = (nY) * maze->col + nX-1;
 			if( !get_bit( nTemp, isVisited ) ){
-				queueAdd( queue, nTemp );
+				//queueAdd( queue, nTemp ); //---------------------------PODMIANKA---------------------------//
+				add_to_queue( nTemp, queue );
 				parentsAdd( parents, n, nTemp );
 			}
 		}
 		if( is_wall( nX, nY, nX+1, nY, maze ) == 0 ){
                         int nTemp = (nY) * maze->col + nX+1;
                         if( !get_bit( nTemp, isVisited ) ){
-                                queueAdd( queue, nTemp );
+                               // queueAdd( queue, nTemp ); //---------------------------PODMIANKA---------------------------//
+							   add_to_queue( nTemp, queue );
 				parentsAdd( parents, n, nTemp );
                         }
                 }
 		if( is_wall( nX, nY, nX, nY-1, maze ) == 0 ){
                         int nTemp = (nY-1) * maze->col + nX;
                         if( !get_bit( nTemp, isVisited ) ){
-                                queueAdd( queue, nTemp );
+                                //queueAdd( queue, nTemp ); //---------------------------PODMIANKA---------------------------//
+								add_to_queue( nTemp, queue );
 				parentsAdd( parents, n, nTemp );
                         }       
                 }
 		if( is_wall( nX, nY, nX, nY+1, maze ) == 0 ){
                         int nTemp = (nY+1) * maze->col + nX;
                         if( !get_bit( nTemp, isVisited ) ){
-                                queueAdd( queue, nTemp );
+                                //queueAdd( queue, nTemp ); //---------------------------PODMIANKA---------------------------//
+								add_to_queue( nTemp, queue );
 				parentsAdd( parents, n, nTemp );
                         }       
                 }
-
 	}
 
 	free(isVisited);
+
+	free_queue( queue );
 	
 	int length = pathLength( parents, begin, end );
 	char *path = pathToFile( parents, begin, end, length );
@@ -213,13 +213,9 @@ int pathLength( FILE *parents, int begin, int end ){
 	while( parent != begin ){
 		
 		pathLength++;
-		//printf( "Węzeł: %d\n", parent );
 		int child = parent;
 		parent = intParentsGet( parents, child );
 	}
-	
-	//printf( "Węzeł: %d\n", begin );
-	//printf( "Długość ścieżki samotności: %d\n", pathLength ); 
 	
 	return pathLength;
 }
@@ -236,10 +232,8 @@ char *pathToFile( FILE *parents, int begin, int end, int length ){
 			fseek( path, 0, SEEK_SET );
 			unsigned char *parentToChars = intToChars( begin );
 			fprintf( path, "%c%c%c", parentToChars[0], parentToChars[1], parentToChars[2] );
-			//free( parentToChars );
 			break;
 		}
-		//printf( "Węzeł: %d\n", parent );
 		fseek( path, length * 3 - i, SEEK_SET );
 		unsigned char *parentToChars = intToChars( parent );
 		fprintf( path, "%c%c%c", parentToChars[0], parentToChars[1], parentToChars[2] );
@@ -247,28 +241,11 @@ char *pathToFile( FILE *parents, int begin, int end, int length ){
 		int child = parent;
 		parent = intParentsGet( parents, child );
 		i += 3;
-		//free( parentToChars );
 	}
-	
-	//fileTest( path, length );
 	
 	fclose( path );
 	
 	return "path.txt";
-
-}
-
-void fileTest( FILE *path, int length ){
-
-	fseek( path, 0, SEEK_SET );
-	int j = 0;
-	for(int i = 0; i <= length; i++){
-		unsigned char parentToChars[3];
-		fscanf( path, "%c%c%c", &parentToChars[0], &parentToChars[1], &parentToChars[2] );
-		printf( "%d. %d\n", i, charsToInt( parentToChars ) );
-		j+=3;
-		fseek( path, j, SEEK_SET );
-	}
 }
 
 void pathConvert( char *ogPath, maze maze, int size){
@@ -296,7 +273,6 @@ void pathConvert( char *ogPath, maze maze, int size){
 	if( maze->start_direction == 'E' ){
 		secondDirection = 4;
 	}
-	//secondDirection = 2;
 	int count = 0;
 	
 	for(int i = 1; i <= size; i++){
@@ -305,12 +281,9 @@ void pathConvert( char *ogPath, maze maze, int size){
 		fseek( path, 3 * i, SEEK_SET );
 		fscanf( path, "%c%c%c", &charArray[0], &charArray[1], &charArray[2] );
 		second = charsToInt( charArray );
-		//printf( "First: %d\n", first );
-		//printf( "Second: %d\n\n", second );
 		
 		firstDirection = secondDirection;
 		secondDirection = second - first;
-		//printf( "firstDirection: %d\n", firstDirection );
 		
 		if( secondDirection == 1 ){
 			secondDirection = 2;
@@ -323,9 +296,7 @@ void pathConvert( char *ogPath, maze maze, int size){
 		}
 		if( secondDirection == -1 * maze->col ){
 			secondDirection = 1;
-		}
-		//printf( "secondDirection: %d\n\n", secondDirection );
-		
+		}	
 		
 		if( firstDirection != secondDirection ){
 			
@@ -336,7 +307,7 @@ void pathConvert( char *ogPath, maze maze, int size){
 				fprintf( convertedPath, "%s\n", "START");
 				count = 1;
 			}
-	
+
 			if( secondDirection - firstDirection == 1 || firstDirection == 4 && secondDirection == 1 ){
 				fprintf( convertedPath, "%s\n", "TURNRIGHT" );
 			}
@@ -344,14 +315,15 @@ void pathConvert( char *ogPath, maze maze, int size){
 				fprintf( convertedPath, "%s\n", "TURNLEFT" );
 			}
 		} else{
+
 			count++;
 		}
-		
-		//printf( "Count: %d\n\n", count );	
 	}
 
 	fprintf( convertedPath, "%s %d\n", "FORWARD", count );
+
 		firstDirection = secondDirection;
+
 		if( maze->end_direction == 'S' ){
 			secondDirection = 3;
 		}
