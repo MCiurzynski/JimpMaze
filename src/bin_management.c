@@ -266,6 +266,10 @@ int read_path_from_bin(char *bin_file) {
 	}
 	fseek(f, 33, SEEK_SET);
 	fread(&offset, sizeof offset, 1, f);
+	if (offset == 0) {
+		fprintf(stderr, "Plik nie zawiera sciezki\n");
+		return -1;
+	}
 	fseek(f, offset + 4, SEEK_SET);
 	fread(&steps, sizeof steps, 1, f);
 	fread(&direction, sizeof direction, 1, f);
