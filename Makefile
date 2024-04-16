@@ -1,4 +1,5 @@
 all: 
+	mkdir -p bin
 	cc src/*.c -o bin/main.out
 
 test:
