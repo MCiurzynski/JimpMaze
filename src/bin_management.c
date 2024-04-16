@@ -5,7 +5,7 @@
 #include "maze.h"
 #include "bin_management.h"
 
-int convert_to_binary(maze m, char* source, char* bin) {//Funkcja in progress
+int convert_to_binary(maze m, char* source, char* bin) {//Funkcja konwertująca labirynt do pliku binarnego
 	int i, j, n;
 	char c, symbol;
 	uint32_t counter;
@@ -244,7 +244,7 @@ maze read_bin_maze(FILE *f) { //Funkcja wczytująca dane z pliku binarnego
 	return m;
 }
 
-int read_path_from_bin(char *bin_file) {
+int read_path_from_bin(char *bin_file) { //Funkcja odczytująca ścieżke z pliku binarnego
 	uint32_t offset, steps;
 	uint8_t direction, len, tmp_direction;
 	int i;
@@ -297,7 +297,7 @@ int read_path_from_bin(char *bin_file) {
 	return 0;
 }
 
-void print_direction(uint8_t x, uint8_t y) {
+void print_direction(uint8_t x, uint8_t y) { //Funkcja pomocnicza wypisująca zmiane kierunku
 	int a, b;
 	switch (x)
 	{
@@ -335,7 +335,7 @@ void print_direction(uint8_t x, uint8_t y) {
 		printf("TURNRIGHT\n");
 }
 
-int direction_to_int(uint16_t x) {
+int direction_to_int(uint16_t x) { //Funkcja zmieniająca kierunek na liczbe
 	switch (x)
 	{
 	case 'N':

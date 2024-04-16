@@ -6,7 +6,7 @@
 #include "find_path.h"
 #include "bfs_for_big.h"
 
-int find_path(maze m) {
+int find_path(maze m) { //Funkcja wywołująca funkcje szukające ścieżki w zależności od wielkości labiryntu
     if (m->col*m->row < 850 * 850) {
         return find_path_small(m);
     } else {
@@ -14,14 +14,14 @@ int find_path(maze m) {
     }
 }
 
-int print_path_to_bin(maze m, char *bin_file) {
+int print_path_to_bin(maze m, char *bin_file) { //Funkcja wywołująca moduły szukania ścieżki i zapisywania jej w formie binarnej w zależności od wielkości labiryntu
    	if (m->col*m->row < 850 * 850)
 		return find_path_to_bin_small(m, bin_file);
 	else
 		return bfs_for_big(m, 1, bin_file);
 }
 
-int find_path_small(maze m) {
+int find_path_small(maze m) { //Funkcja szuka najkrótszej ścieszki w labiryncie korzystając tylko z ramu
     uint16_t* parents = bfs_smaller_maze(m);
     if (parents == NULL) {
         fprintf(stderr, "Nie udalo sie znalezc sciezki\n");
@@ -142,7 +142,7 @@ int find_path_small(maze m) {
     return 0;
 }
 
-int find_path_to_bin_small(maze m, char* bin_file) {
+int find_path_to_bin_small(maze m, char* bin_file) { //Funkcja zapisuje ścieżke do pliku binarnego
     FILE* f = fopen(bin_file, "rb+");
     uint32_t offset_to_solution, is_offset;
     uint32_t steps;
@@ -258,7 +258,7 @@ int find_path_to_bin_small(maze m, char* bin_file) {
     return 0;
 }
 
-void path_step_to_bin(int len, int direction, FILE* f) {
+void path_step_to_bin(int len, int direction, FILE* f) { //Funkcja pomocnicza do zapisywania kierunku ścieżki w labiryncie binarnym
     uint8_t tmp = len - 1, c;
     switch (direction)
     {
@@ -279,7 +279,7 @@ void path_step_to_bin(int len, int direction, FILE* f) {
     fwrite(&tmp,1, 1, f);
 }
 
-uint16_t* bfs_smaller_maze(maze m) {
+uint16_t* bfs_smaller_maze(maze m) { //Funkcja implementująca algorytm bfs
     uint16_t start_x = m->end_x;
     uint16_t start_y = m->end_y;
     int mv_x[4] = {0, 1, 0, -1};
@@ -331,7 +331,7 @@ uint16_t* bfs_smaller_maze(maze m) {
     return parents;
 }
 
-void add_parent(long long node, long long parent, uint16_t *v, maze m) {
+void add_parent(long long node, long long parent, uint16_t *v, maze m) { //Funkcja dodająca poprzednika do tablicy
     int mv_x[4] = {0, 1, 0, -1};
     int mv_y[4] = {1, 0, -1, 0};
     int i;
@@ -363,7 +363,7 @@ void add_parent(long long node, long long parent, uint16_t *v, maze m) {
     }
 }
 
-long long get_parent(long long node, uint16_t *v, maze m) {
+long long get_parent(long long node, uint16_t *v, maze m) { //Funkcja zwracająca poprzednika z tablicy
     int a = get_bit(2 * node, v);
     int b = get_bit(2 * node + 1, v);
     if (a == 0 && b == 1)
@@ -377,7 +377,7 @@ long long get_parent(long long node, uint16_t *v, maze m) {
     return -1;
 }
 
-queue_head init_queue() {
+queue_head init_queue() { //Funkcja inicjująca kolejke
     queue_head q = malloc(sizeof(*q));
     q->first = NULL;
     q->last = NULL;
@@ -386,7 +386,7 @@ queue_head init_queue() {
     return q;
 }
 
-void free_queue(queue_head q) {
+void free_queue(queue_head q) { //Funkcja zwalniająca kolejke
     queue_t tmp;
     while(q->buff_first != NULL) {
         tmp = q->buff_first;
@@ -401,7 +401,7 @@ void free_queue(queue_head q) {
     free(q);
 }
 
-void add_to_queue(int n, queue_head q) {
+void add_to_queue(int n, queue_head q) { //Funkcja dodająca element do kolejki
     queue_t tmp;
     if (q->buff_first == NULL)
         tmp = malloc(sizeof(struct queue));
@@ -423,7 +423,7 @@ void add_to_queue(int n, queue_head q) {
     }
 }
 
-uint32_t get_from_queue(queue_head q) {
+uint32_t get_from_queue(queue_head q) { //Funkcja zwracająca element z kolejki
     if (q->first == NULL)
         return -1;
     queue_t tmp;

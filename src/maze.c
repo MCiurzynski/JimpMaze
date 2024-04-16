@@ -6,7 +6,7 @@
 #include "txt_management.h"
 #include "bin_management.h"
 
-void print_help() {
+void print_help() { //Funkcja wypisująca help
 	printf("Uzycie: ./main.out [FILE] [OPTIONS]\n");
 	printf("Program wyszukuje najkrotsza sciezke w labiryncie.\n");
 	printf("Plik labiryntu może być w formie tekstowej lub binarnej.\n");
