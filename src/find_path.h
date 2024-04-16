@@ -1,22 +1,42 @@
 #ifndef FIND_PATH_H
 #define FIND_PATH_H
 
-#include "maze.h"
+#pragma pack(push, 1)
+typedef struct queue {
+	uint32_t n;
+    struct queue* next;
+} *queue_t;
 
-typedef struct path_struct {
-	char *v;
-	int steps;
-	int n;
-} *path;
+typedef struct queue_head {
+    queue_t first;
+    queue_t last;
+    queue_t buff_first;
+    queue_t buff_last;
+} *queue_head;
+#pragma pack(pop)
 
-path double_size(path);
+int find_path(maze);
 
-void free_path(path);
+int find_path_to_bin(maze, char*);
 
-path find_path(maze);
+int find_path_small(maze m);
 
-int bfs(uint16_t, uint16_t, uint16_t, uint16_t, maze);
+int find_path_to_bin_small(maze, char*);
 
-void make_wall(maze, uint16_t*);
+void path_step_to_bin(int, int, FILE*);
+
+uint16_t *bfs_smaller_maze(maze);
+
+void add_parent(long long, long long, uint16_t*, maze);
+
+long long get_parent(long long, uint16_t*, maze);
+
+queue_head init_queue();
+
+void free_queue(queue_head);
+
+void add_to_queue(int, queue_head);
+
+uint32_t get_from_queue(queue_head);
 
 #endif

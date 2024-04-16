@@ -3,6 +3,11 @@
     "files.associations": {
         "binary.h": "c",
         "stdio.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "find_path.h": "c",
+        "txt_management.h": "c",
+        "bfs_for_big.h": "c",
+        "stdbool.h": "c",
+        "maze.h": "c"
     }
 }
