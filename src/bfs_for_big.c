@@ -10,7 +10,7 @@
 
 char path_file[100] = "path.tmp";
 
-FILE * charFileInit( int size, char* fileName ){
+FILE * charFileInit( int size, char* fileName ){ //Tworzenie pliku zapełnionego zeminnymi typu char (3 * size)
 
 	FILE *file = fopen( fileName, "w+" );
 
@@ -27,7 +27,7 @@ FILE * charFileInit( int size, char* fileName ){
 	}
 }
 
-unsigned char* intToChars(int number) {
+unsigned char* intToChars(int number) { //Zapis liczby pod postacią trzech zmiennych typu char
 
 	unsigned static char charArray[3];
 	charArray[0] = (number >> 16) & 0xFF;
@@ -36,7 +36,7 @@ unsigned char* intToChars(int number) {
 	return charArray;
 }
 
-int charsToInt(unsigned char *charArray) {
+int charsToInt(unsigned char *charArray) { //Zamiana trzech zmiennych typu char w liczbę
 
 	int number = 0;
 	number |= (charArray[0] & 0xFF) << 16;
@@ -45,14 +45,14 @@ int charsToInt(unsigned char *charArray) {
 	return number;
 }
 
-void parentsAdd( FILE *parents, int parent, int child ){
+void parentsAdd( FILE *parents, int parent, int child ){ //Dodanie poprzednika do danego węzła
 
 	fseek( parents, 3 * child, SEEK_SET );
 	unsigned char *parentToChars = intToChars( parent );
 	fprintf( parents, "%c%c%c", parentToChars[0], parentToChars[1], parentToChars[2] );
 }
 
-int intParentsGet( FILE *parents, int child ){
+int intParentsGet( FILE *parents, int child ){ //Pobranie poprzednika danego węzła
 
 	fseek( parents, 3 * child, SEEK_SET );
 	unsigned char parentToChars[3];
@@ -60,7 +60,7 @@ int intParentsGet( FILE *parents, int child ){
 	return charsToInt( parentToChars );
 }
 
-int bfs_for_big( maze maze, int bflag, char* bin_file){
+int bfs_for_big( maze maze, int bflag, char* bin_file){ //Algorytm przeszukiwania labiryntu wszerz (działa z wykorzystaniem plików tymczaswych)
 	char parents_file[100] = "parents.tmp";
 	uint16_t *isVisited = calloc( maze->row * maze->col/16 + 1, sizeof(uint16_t) );
 	if (isVisited == NULL) {
@@ -151,7 +151,7 @@ int bfs_for_big( maze maze, int bflag, char* bin_file){
 	return 0;
 }
 
-int pathLength( FILE *parents, int begin, int end ){
+int pathLength( FILE *parents, int begin, int end ){ //Długość ściżki na podstawie zabioru poprzedników węzłów
 	
 	int parent = end;
 	int pathLength = 0;
@@ -166,7 +166,7 @@ int pathLength( FILE *parents, int begin, int end ){
 	return pathLength;
 }
 
-char *pathToFile( FILE *parents, int begin, int end, int length ){
+char *pathToFile( FILE *parents, int begin, int end, int length ){ //Zapis ścieżki wynikowej do pliku tymczasowego
 	
 	int parent = end;
 	sprintf(path_file, "path.tmp");
@@ -209,7 +209,7 @@ char *pathToFile( FILE *parents, int begin, int end, int length ){
 	return path_file;
 }
 
-void pathConvert( char *ogPath, maze maze, int size ){
+void pathConvert( char *ogPath, maze maze, int size ){ //Zamiana ścieżki na listę kroków i wypisanie jej na stdout
 	
 	unsigned char charArray[3];
 	FILE *path = fopen( ogPath, "r" );
@@ -308,7 +308,7 @@ void pathConvert( char *ogPath, maze maze, int size ){
 	fclose( path );
 }
 
-int pathConvertToBin( char *ogPath, maze maze, int size, char* bin_file ) {
+int pathConvertToBin( char *ogPath, maze maze, int size, char* bin_file ) { //Zamiania ściezki na format do pliku binarnego i zapis w nim
 
     FILE* f = fopen(bin_file, "rb+");
     uint32_t offset_to_solution, is_offset;
