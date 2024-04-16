@@ -106,10 +106,7 @@ int main(int argc, char **argv) {
 		return 11;
 	}
 	if (fflag == 1) {
-		if (m->col*m->row < 850 * 850)
-			find_path_to_bin(m, bin_file);
-		else
-			find_path_to_big_bin(m, bin_file);
+		find_path_to_bin_small(m, bin_file);
 	}
 	free_maze(m);
 	return 0;

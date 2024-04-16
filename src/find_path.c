@@ -14,8 +14,11 @@ int find_path(maze m) {
     }
 }
 
-int find_path_to_big_bin(maze m, char* bin_file) {
-    return bfs_for_big(m, 1, bin_file);
+int print_path_to_bin(maze m, char *bin_file) {
+   	if (m->col*m->row < 850 * 850)
+		return find_path_to_bin_small(m, bin_file);
+	else
+		return bfs_for_big(m, 1, bin_file);
 }
 
 int find_path_small(maze m) {
@@ -139,7 +142,7 @@ int find_path_small(maze m) {
     return 0;
 }
 
-int find_path_to_bin(maze m, char* bin_file) {
+int find_path_to_bin_small(maze m, char* bin_file) {
     FILE* f = fopen(bin_file, "rb+");
     uint32_t offset_to_solution, is_offset;
     uint32_t steps;
